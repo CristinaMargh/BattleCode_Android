@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "13098356024",
+    "project_id": "battlecode-771a0",
+    "storage_bucket": "battlecode-771a0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13098356024:android:c974208cc37bd7416745cd",
+        "android_client_info": {
+          "package_name": "com.example.aplicatie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkWfpo5rf9b8rOphe3io0yrkqn7YuPv7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+

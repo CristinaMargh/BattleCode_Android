@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/welcome_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/background_gradient"
+    android:padding="32dp"
+    tools:context=".ui.auth.WelcomeActivity">
+
+    <TextView
+        android:id="@+id/welcome_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Battle Code"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="48dp"/>
+
+    <Button
+        android:id="@+id/welcome_login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_rounded"
+        android:layout_marginBottom="24dp"
+        android:padding="12dp"/>
+
+    <Button
+        android:id="@+id/welcome_register_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_rounded"
+        android:padding="12dp"/>
+</LinearLayout>

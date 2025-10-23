@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+android:background="#9BA8DC"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/timer_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Timp rămas:"
+        android:textSize="18sp"
+	android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/question_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Întrebarea apare aici"
+        android:textSize="22sp"
+        android:layout_marginBottom="24dp"
+        android:textAlignment="center" />
+
+    <android.widget.Button
+        android:id="@+id/answer1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rasp 1"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:background="@drawable/r_a_b"
+        android:layout_marginBottom="8dp" />
+
+    <android.widget.Button
+        android:id="@+id/answer2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rasp 2"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:background="@drawable/r_a_b"
+        android:layout_marginBottom="8dp" />
+
+    <android.widget.Button
+        android:id="@+id/answer3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rasp 3"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:background="@drawable/r_a_b"
+        android:layout_marginBottom="8dp" />
+
+    <android.widget.Button
+        android:id="@+id/answer4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rasp 4"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:background="@drawable/r_a_b"
+        android:layout_marginBottom="8dp" />
+
+
+    <ImageView
+        android:id="@+id/angry_cat"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/angry_cat"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/happy_cat"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/happy_cat"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <android.widget.Button
+        android:id="@+id/next_question_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:padding="14dp"
+        android:background="@drawable/next_button"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="24dp"/>
+
+</LinearLayout>
