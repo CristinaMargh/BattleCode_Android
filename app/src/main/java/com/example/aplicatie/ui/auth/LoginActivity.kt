@@ -21,25 +21,30 @@ class LoginActivity : AppCompatActivity() {
         val registerLink = findViewById<TextView>(R.id.register_link)
 
         loginBtn.setOnClickListener {
-            val user = username.text.toString()
-            val pass = password.text.toString()
+            val user = username.text.toString().trim()
+            val pass = password.text.toString().trim()
 
-            if (user.isBlank() || pass.isBlank()) {
+            if (user.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // login logic
             repo.login(user, pass) { ok, err ->
                 if (ok) {
+                    // save username locally for later use
                     val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
                     prefs.edit().putString("username", user).apply()
 
-                    val i = Intent(this, MainActivity::class.java)
-                    i.putExtra("username", user)
-                    startActivity(i)
+                    // move to MainActivity
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("username", user)
+                    startActivity(intent)
+
+                    // close LoginActivity so user can’t go back
                     finish()
                 } else {
-                    Toast.makeText(this, err, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, err ?: "Login failed", Toast.LENGTH_SHORT).show()
                 }
             }
         }

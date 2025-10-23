@@ -11,7 +11,7 @@ The application provides timed question sessions, difficulty-based scoring, and 
 - Dynamic question selection by topic or difficulty
 - Persistent storage of users, questions, and scores
 - Scoreboard / ranking system between users
-
+- Fragmentation : reusable fragment foar leaderboard
 ## Technologies
 
 - **Platform:** Android

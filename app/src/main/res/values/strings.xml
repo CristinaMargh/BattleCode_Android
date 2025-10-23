@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">BatlleCode</string>
     <string name="logo_desc">Logo Battle Code</string>
+    <string name="play">Play</string>
+    <string name="fragment_welcome">Welcome to BattleCode!</string>
 </resources>

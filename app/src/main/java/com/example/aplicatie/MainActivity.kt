@@ -1,5 +1,6 @@
 package com.example.aplicatie
 
+import com.example.aplicatie.ui.profile.ProfileFragment
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -8,7 +9,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 
 val db = FirebaseFirestore.getInstance()
-
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,12 +19,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        // fragment
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ProfileFragment())
+            .commit()
+
+        // existing button
         val playButton: Button = findViewById(R.id.play_button)
         playButton.setOnClickListener {
             val intent = Intent(this, QuizActivity::class.java)
             intent.putExtra("username", currentUsername)
             startActivity(intent)
         }
-
     }
 }
