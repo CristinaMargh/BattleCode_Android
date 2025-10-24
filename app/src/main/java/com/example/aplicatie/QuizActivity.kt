@@ -38,6 +38,8 @@ class QuizActivity : AppCompatActivity() {
     )
 
     private val questions = allQuestions.shuffled().take(5)
+    private val wrongQuestions = mutableListOf<String>()
+    private val wrongCorrectAnswers = mutableListOf<String>()
 
     private var currentQuestionIndex = 0
     private var score = 0
@@ -101,6 +103,8 @@ class QuizActivity : AppCompatActivity() {
             UserRepository().updateHighScore(currentUsername, score)
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("score", score)
+            intent.putStringArrayListExtra("wrongQuestions", ArrayList(wrongQuestions))
+            intent.putStringArrayListExtra("wrongCorrectAnswers", ArrayList(wrongCorrectAnswers))
             startActivity(intent)
             finish()
             return
@@ -133,7 +137,9 @@ class QuizActivity : AppCompatActivity() {
                     button.setBackgroundResource(R.drawable.answer_wrong)
                     angryCat.visibility = View.VISIBLE
                     angryCat.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up))
-                    vibrateError() //  Aici e apelată vibrația
+                    vibrateError() //  Aici e apelat vibrația
+                    wrongQuestions.add(question.text)
+                    wrongCorrectAnswers.add(question.options[question.correctAnswerIndex])
                 }
 
                 answerButtons.forEach {
