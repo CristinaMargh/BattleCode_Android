@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,26 +17,32 @@
         android:theme="@style/Theme.Aplicatie"
         tools:targetApi="31">
 
+        <!-- Main screen after auth; keep one declaration only.
+             nightMode NU este flag valid în configChanges; uiMode acoperă tema. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+
+            />
+
+        <!-- Other activities (no intent-filters => exported poate fi omis/false) -->
         <activity android:name=".QuizActivity" />
         <activity android:name=".ResultActivity" />
-        <activity android:name=".ui.auth.LoginActivity"
-            android:exported="true">
-        </activity>
-        <activity android:name=".ui.auth.RegisterActivity"/>
-        <activity android:name=".ui.ChooseDifficultyActivity"/>
+        <activity android:name=".ui.auth.LoginActivity" />
+        <activity android:name=".ui.auth.RegisterActivity" />
+        <activity android:name=".ui.ChooseDifficultyActivity" />
         <activity android:name=".ui.WrongAnswersActivity" />
-        <activity android:name=".ui.leaderboard.LeaderboardActivity"/>
-        <activity android:name=".MainActivity" android:exported="true">
-        </activity>
+        <activity android:name=".ui.leaderboard.LeaderboardActivity" />
 
-
-        <activity android:name=".ui.auth.WelcomeActivity" android:exported="true">
+        <!-- Launcher (only one with MAIN/LAUNCHER must be exported=true) -->
+        <activity
+            android:name=".ui.auth.WelcomeActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
-
-
 </manifest>
