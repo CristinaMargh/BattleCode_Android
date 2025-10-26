@@ -142,7 +142,7 @@ fun WrongAnswersScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                text = "Răspuns: ${correctAnswers[i]}",
+                text = "Answer: ${correctAnswers[i]}",
                 fontSize = 14.sp,
                 color = Color(0xFF1B1B1B),
                 modifier = Modifier
@@ -152,7 +152,7 @@ fun WrongAnswersScreen(
         }
 
         if (count == 0) {
-            Text("Nicio întrebare greșită!", color = Color.Black, fontSize = 16.sp)
+            Text("No wrong answers", color = Color.Black, fontSize = 16.sp)
         }
 
         Spacer(modifier = Modifier.height(24.dp))

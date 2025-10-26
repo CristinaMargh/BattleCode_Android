@@ -3,6 +3,7 @@ package com.example.aplicatie
 import com.example.aplicatie.ui.profile.ProfileFragment
 import android.content.Intent
 import android.os.Bundle
+import com.example.aplicatie.ui.ChooseDifficultyActivity
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         // existing button
         val playButton: Button = findViewById(R.id.play_button)
         playButton.setOnClickListener {
-            val intent = Intent(this, QuizActivity::class.java)
+            val intent = Intent(this, ChooseDifficultyActivity::class.java)
             intent.putExtra("username", currentUsername)
             startActivity(intent)
         }

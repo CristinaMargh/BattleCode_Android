@@ -20,6 +20,7 @@
             android:exported="true">
         </activity>
         <activity android:name=".ui.auth.RegisterActivity"/>
+        <activity android:name=".ui.ChooseDifficultyActivity"/>
         <activity android:name=".ui.WrongAnswersActivity" />
         <activity android:name=".ui.leaderboard.LeaderboardActivity"/>
         <activity android:name=".MainActivity" android:exported="true">

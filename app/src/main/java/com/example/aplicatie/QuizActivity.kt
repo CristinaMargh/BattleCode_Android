@@ -14,30 +14,39 @@ import com.example.aplicatie.data.UserRepository
 
 class QuizActivity : AppCompatActivity() {
 
-    private val allQuestions = listOf(
-        Question("Care este dimensiunea tipică a unui `int` în C pe sistemele moderne (64-bit)?",
-            listOf("2 bytes", "4 bytes", "8 bytes", "Depinde de compilator"), 1),
-        Question("Ce valoare returnează funcția `main()` în C/C++ dacă totul a decurs cu succes?",
+    // ---------- Questions by difficulty (EN) ----------
+    private val easyQuestions = listOf(
+        Question("What value does the `main()` function return in C/C++ if everything went successfully?",
             listOf("0", "1", "-1", "void"), 0),
-        Question("Ce structură de date folosește stiva funcțiilor în execuție?",
-            listOf("Queue", "Heap", "Stack", "Tree"), 2),
-        Question("Ce operator în C/C++ este folosit pentru a accesa membrii unui pointer către structură?",
-            listOf(".", "->", "::", "#"), 1),
-        Question("Cum se numește zona de memorie unde sunt alocate variabilele locale?",
-            listOf("Heap", "Stack", "Data segment", "Text segment"), 1),
-        Question("Care este complexitatea medie a căutării într-un `hash map` (C++/Java)?",
-            listOf("O(n)", "O(1)", "O(log n)", "O(n log n)"), 1),
-        Question("Ce instrucțiune oprește complet execuția unui ciclu `for`?",
+        Question("Which statement completely stops the execution of a `for` loop?",
             listOf("continue", "break", "return", "exit"), 1),
-        Question("Care este standardul cel mai recent pentru C++ (în 2023)?",
-            listOf("C++11", "C++17", "C++20", "C++23"), 3),
-        Question("Ce comandă folosești în terminal pentru a compila un fișier `main.c` cu gcc?",
-            listOf("gcc main.c", "g++ main.c", "make main", "compile main.c"), 0),
-        Question("Cum este reprezentat caracterul NULL în ASCII?",
+        Question("How is the NULL character represented in ASCII?",
             listOf("'\\0'", "'NULL'", "'\\n'", "'0'"), 0)
     )
 
-    private val questions = allQuestions.shuffled().take(5)
+    private val mediumQuestions = listOf(
+        Question("What is the name of the memory area where local variables are allocated?",
+            listOf("Heap", "Stack", "Data segment", "Text segment"), 1),
+        Question("Which data structure is used by the call stack of executing functions?",
+            listOf("Queue", "Heap", "Stack", "Tree"), 2),
+        Question("Which operator in C/C++ is used to access members via a pointer to a struct?",
+            listOf(".", "->", "::", "#"), 1)
+    )
+
+    private val hardQuestions = listOf(
+        Question("What is the typical size of an `int` in C on modern (64-bit) systems?",
+            listOf("2 bytes", "4 bytes", "8 bytes", "Depends on the compiler"), 1),
+        Question("What is the latest C++ standard (as of 2023)?",
+            listOf("C++11", "C++17", "C++20", "C++23"), 3),
+        Question("Which terminal command compiles a `main.c` file with GCC?",
+            listOf("gcc main.c", "g++ main.c", "make main", "compile main.c"), 0),
+        Question("What is the average time complexity for searching in a `hash map` (C++/Java)?",
+            listOf("O(n)", "O(1)", "O(log n)", "O(n log n)"), 1)
+    )
+
+    // Will be filled based on difficulty
+    private var questions: List<Question> = emptyList()
+
     private val wrongQuestions = mutableListOf<String>()
     private val wrongCorrectAnswers = mutableListOf<String>()
 
@@ -58,15 +67,24 @@ class QuizActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
 
+        // Username (optional)
         currentUsername = intent.getStringExtra("username") ?: "ANONIM"
 
+        // Difficulty -> select questions
+        val difficulty = intent.getStringExtra("difficulty") ?: "medium"
+        questions = when (difficulty) {
+            "easy" -> easyQuestions.shuffled().take(5)
+            "hard" -> hardQuestions.shuffled().take(5)
+            else -> mediumQuestions.shuffled().take(5)
+        }
+
+        // Bind views
         answerButtons = listOf(
             findViewById(R.id.answer1),
             findViewById(R.id.answer2),
             findViewById(R.id.answer3),
             findViewById(R.id.answer4)
         )
-
         questionText = findViewById(R.id.question_text)
         timerText = findViewById(R.id.timer_text)
         happyCat = findViewById(R.id.happy_cat)
@@ -81,18 +99,14 @@ class QuizActivity : AppCompatActivity() {
         showQuestion()
     }
 
-    /**  Vibrație scurtă pentru răspuns greșit */
+    /** Short vibration on wrong answer */
     private fun vibrateError() {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator.vibrate(
-                VibrationEffect.createOneShot(
-                    200, // durata vibrației
-                    VibrationEffect.DEFAULT_AMPLITUDE
-                )
+                VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE)
             )
         } else {
-            // Compatibilitate pentru Android mai vechi
             @Suppress("DEPRECATION")
             vibrator.vibrate(200)
         }
@@ -137,15 +151,12 @@ class QuizActivity : AppCompatActivity() {
                     button.setBackgroundResource(R.drawable.answer_wrong)
                     angryCat.visibility = View.VISIBLE
                     angryCat.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up))
-                    vibrateError() //  Aici e apelat vibrația
+                    vibrateError()
                     wrongQuestions.add(question.text)
                     wrongCorrectAnswers.add(question.options[question.correctAnswerIndex])
                 }
 
-                answerButtons.forEach {
-                    it.isClickable = false
-                }
-
+                answerButtons.forEach { it.isClickable = false }
                 answerButtons[question.correctAnswerIndex].setBackgroundResource(R.drawable.answer_correct)
                 nextQuestionButton.visibility = View.VISIBLE
             }
@@ -156,9 +167,9 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun startTimer() {
-        timer = object : CountDownTimer(10000, 1000) {
+        timer = object : CountDownTimer(10_000, 1_000) {
             override fun onTick(millisUntilFinished: Long) {
-                timerText.text = "Timp rămas: ${millisUntilFinished / 1000}s"
+                timerText.text = "Time left: ${millisUntilFinished / 1000}s"
             }
 
             override fun onFinish() {
@@ -175,9 +186,8 @@ class QuizActivity : AppCompatActivity() {
         }.start()
     }
 
-    private fun calculateScore(timeTaken: Long): Int {
-        return (10000 - timeTaken).toInt() / 1000
-    }
+    private fun calculateScore(timeTaken: Long): Int =
+        (10_000 - timeTaken).toInt() / 1000
 
     data class Question(val text: String, val options: List<String>, val correctAnswerIndex: Int)
 }
