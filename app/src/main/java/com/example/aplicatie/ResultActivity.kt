@@ -63,6 +63,5 @@ class ResultActivity : AppCompatActivity() {
             i.putStringArrayListExtra("wrongCorrectAnswers", wrongCorrectAnswers)
             startActivity(i)
         }
-
     }
 }

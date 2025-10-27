@@ -14,7 +14,7 @@ import com.example.aplicatie.data.UserRepository
 
 class QuizActivity : AppCompatActivity() {
 
-    // ---------- Questions by difficulty (EN) ----------
+    // ---------- Questions by difficulty ----------
     private val easyQuestions = listOf(
         Question("What value does the `main()` function return in C/C++ if everything went successfully?",
             listOf("0", "1", "-1", "void"), 0),

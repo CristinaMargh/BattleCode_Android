@@ -17,15 +17,13 @@
         android:theme="@style/Theme.Aplicatie"
         tools:targetApi="31">
 
-        <!-- Main screen after auth; keep one declaration only.
-             nightMode NU este flag valid în configChanges; uiMode acoperă tema. -->
+        <!-- Main screen after auth; keep one declaration only. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-
             />
 
-        <!-- Other activities (no intent-filters => exported poate fi omis/false) -->
+        <!-- Other activities -->
         <activity android:name=".QuizActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".ui.auth.LoginActivity" />
@@ -34,7 +32,7 @@
         <activity android:name=".ui.WrongAnswersActivity" />
         <activity android:name=".ui.leaderboard.LeaderboardActivity" />
 
-        <!-- Launcher (only one with MAIN/LAUNCHER must be exported=true) -->
+        <!-- Launcher -->
         <activity
             android:name=".ui.auth.WelcomeActivity"
             android:exported="true">
