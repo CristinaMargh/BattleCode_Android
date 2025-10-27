@@ -26,7 +26,6 @@ fun MainScreen(
 ) {
     var tab by remember { mutableStateOf(MainTab.Profile) }
 
-    // mov pal pentru background (poți muta în theme dacă vrei)
     val lilac = Color(0xFF98A5D6)
 
     Box(
@@ -34,7 +33,7 @@ fun MainScreen(
             .fillMaxSize()
             .background(lilac)
     ) {
-        // Dark switch – sus stânga
+        // Dark switch
         Row(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -46,7 +45,6 @@ fun MainScreen(
             Switch(checked = isDark, onCheckedChange = onToggleDark)
         }
 
-        // Conținutul principal
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,14 +53,12 @@ fun MainScreen(
         ) {
             Spacer(Modifier.height(24.dp))
 
-            // LOGO mare, centrat
             Image(
                 painter = painterResource(R.drawable.battle_code_logo4),
                 contentDescription = "Logo",
                 modifier = Modifier.size(140.dp)   // <- mai mare
             )
 
-            // Titlul sub logo
             Text(
                 text = "Battle Code",
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
@@ -70,7 +66,6 @@ fun MainScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Butoane sub titlu
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(onClick = { tab = MainTab.Profile }) { Text("Profile") }
                 OutlinedButton(onClick = { tab = MainTab.Leaderboard }) { Text("Leaderboard") }
@@ -78,7 +73,7 @@ fun MainScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // „zona de fragment”
+            // fragment
             when (tab) {
                 MainTab.Profile -> ProfileCard(username)
                 MainTab.Leaderboard -> LeaderboardPreview(onOpenFullLeaderboard)

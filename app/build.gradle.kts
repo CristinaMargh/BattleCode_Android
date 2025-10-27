@@ -62,10 +62,14 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
     implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.material:material-icons-core")
     // COmpose Navigation, for many activities
     implementation("androidx.navigation:navigation-compose:2.8.0")
 
     // ViewModel + LiveData in Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+    implementation ("androidx.compose.material:material-icons-extended")
+
 }
 apply(plugin = "com.google.gms.google-services")

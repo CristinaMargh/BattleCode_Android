@@ -21,18 +21,18 @@ class ResultActivity : AppCompatActivity() {
         val username = prefs.getString("username", null)
         val wrongQuestions = intent.getStringArrayListExtra("wrongQuestions") ?: arrayListOf()
         val wrongCorrectAnswers = intent.getStringArrayListExtra("wrongCorrectAnswers") ?: arrayListOf()
-        findViewById<TextView>(R.id.result_text).text = "Scor final: $score"
+        findViewById<TextView>(R.id.result_text).text = "Finale score: $score"
 
         if (username != null) {
             repo.getHighScore(username) { highScore ->
                 if (highScore == null) {
-                    findViewById<TextView>(R.id.high_score_text).text = "Scor maxim: necunoscut"
+                    findViewById<TextView>(R.id.high_score_text).text = "Maximum score: unknown"
                 } else {
                     if (score > highScore) {
                         repo.updateHighScore(username, score)
-                        findViewById<TextView>(R.id.high_score_text).text = "Scor maxim: $score"
+                        findViewById<TextView>(R.id.high_score_text).text = "Maximum score: $score"
                     } else {
-                        findViewById<TextView>(R.id.high_score_text).text = "Scor maxim: $highScore"
+                        findViewById<TextView>(R.id.high_score_text).text = "Maximum score: $highScore"
                     }
                 }
             }

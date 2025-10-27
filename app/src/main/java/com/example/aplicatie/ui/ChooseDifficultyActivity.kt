@@ -41,7 +41,7 @@ fun DifficultyScreen(onSelect: (String) -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Alege dificultatea", fontSize = 28.sp, color = Color.Black)
+        Text("Choose difficulty", fontSize = 28.sp, color = Color.Black)
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
