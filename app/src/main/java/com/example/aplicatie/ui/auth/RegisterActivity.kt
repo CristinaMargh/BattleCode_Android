@@ -1,82 +1,204 @@
-//package com.example.aplicatie.ui.auth
-//
-//import android.os.Bundle
-//import android.widget.*
-//import androidx.appcompat.app.AppCompatActivity
-//import com.example.aplicatie.data.UserRepository
-//import com.example.aplicatie.ui.auth.LoginActivity
-//
-//class RegisterActivity : AppCompatActivity() {
-//    private val repo = UserRepository()
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//        val username = EditText(this).apply { hint = "Username" }
-//        val pass = EditText(this).apply { hint = "Password"; inputType = 129 }
-//        val btn = Button(this).apply { text = "Register" }
-//        val status = TextView(this)
-//
-//        btn.setOnClickListener {
-//            repo.register(username.text.toString(), pass.text.toString()) { ok, err ->
-//                status.text = if (ok) "Success! Go to login." else err
-//                if (ok) finish() // închide și revii în Login
-//            }
-//        }
-//
-//        val layout = LinearLayout(this).apply {
-//            orientation = LinearLayout.VERTICAL
-//            setPadding(24, 24, 24, 24)
-//            addView(username); addView(pass); addView(btn); addView(status)
-//        }
-//        setContentView(layout)
-//    }
-//}
-
 package com.example.aplicatie.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import com.example.aplicatie.R
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.aplicatie.MainActivity
 import com.example.aplicatie.data.UserRepository
+import com.example.aplicatie.ui.theme.AplicatieTheme
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : ComponentActivity() {
+
     private val repo = UserRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
 
-        val username = findViewById<EditText>(R.id.register_username)
-        val password = findViewById<EditText>(R.id.register_password)
-        val registerBtn = findViewById<Button>(R.id.register_button)
-        val loginLink = findViewById<TextView>(R.id.login_link)
-
-        registerBtn.setOnClickListener {
-            val user = username.text.toString()
-            val pass = password.text.toString()
-
-            if (user.isBlank() || pass.isBlank()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            repo.register(user, pass) { ok, err ->
-                if (ok) {
-                    Toast.makeText(this, "Account created! You can now log in.", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    finish()
-                } else {
-                    Toast.makeText(this, err, Toast.LENGTH_SHORT).show()
+        setContent {
+            AplicatieTheme {
+                // Whole screen uses the app background from your theme
+                Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    RegisterScreen(
+                        onLoginClick = {
+                            startActivity(Intent(this, LoginActivity::class.java))
+                            finish()
+                        },
+                        onSuccess = { username ->
+                            val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                            prefs.edit().putString("username", username).apply()
+                            startActivity(
+                                Intent(this, MainActivity::class.java)
+                                    .putExtra("username", username)
+                            )
+                            finish()
+                        },
+                        onError = { msg ->
+                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                        },
+                        doRegister = { user, pass, done ->
+                            repo.register(user, pass) { ok, err ->
+                                done(ok, err ?: "Registration failed")
+                            }
+                        }
+                    )
                 }
             }
         }
+    }
+}
 
-        loginLink.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+@Composable
+private fun RegisterScreen(
+    onLoginClick: () -> Unit,
+    onSuccess: (String) -> Unit,
+    onError: (String) -> Unit,
+    doRegister: (String, String, (Boolean, String) -> Unit) -> Unit,
+) {
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirm by remember { mutableStateOf("") }
+
+    var passVisible by remember { mutableStateOf(false) }
+    var confirmVisible by remember { mutableStateOf(false) }
+
+    var loading by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        // Top bar with strong contrast (primary bg + white text)
+        Text(
+            text = "Create account",
+            fontSize = 28.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(vertical = 16.dp),
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it; error = null },
+            label = { Text("Username") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it; error = null },
+            label = { Text("Password") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = if (passVisible) VisualTransformation.None
+            else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passVisible = !passVisible }) {
+                    Icon(
+                        imageVector = if (passVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        contentDescription = if (passVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = confirm,
+            onValueChange = { confirm = it; error = null },
+            label = { Text("Confirm password") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = if (confirmVisible) VisualTransformation.None
+            else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { confirmVisible = !confirmVisible }) {
+                    Icon(
+                        imageVector = if (confirmVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        contentDescription = if (confirmVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        )
+
+        if (error != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(error!!, color = Color(0xFFB00020), fontSize = 13.sp)
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                if (username.isBlank() || password.isBlank() || confirm.isBlank()) {
+                    error = "Please fill in all fields"; return@Button
+                }
+                if (password.length < 6) {
+                    error = "Password must be at least 6 characters"; return@Button
+                }
+                if (password != confirm) {
+                    error = "Passwords do not match"; return@Button
+                }
+
+                loading = true
+                doRegister(username, password) { ok, msg ->
+                    loading = false
+                    if (ok) onSuccess(username) else {
+                        error = msg
+                        onError(msg)
+                    }
+                }
+            },
+            enabled = !loading,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+        ) {
+            if (loading) {
+                CircularProgressIndicator(strokeWidth = 2.dp, color = Color.White)
+            } else {
+                Text("Register", fontSize = 18.sp)
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        TextButton(onClick = onLoginClick) {
+            Text(
+                "Already have an account? Login",
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
     }
 }
