@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aplicatie.MainActivity
@@ -82,7 +83,15 @@ private fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Login", fontSize = 28.sp, color = Color.Black)
+        Text(
+            text = "Login",
+            fontSize = 24.sp,                // a bit smaller
+            color = Color.White,             // force white
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            textAlign = TextAlign.Center
+        )
         Spacer(Modifier.height(24.dp))
 
         OutlinedTextField(
@@ -151,7 +160,7 @@ private fun LoginScreen(
         Spacer(Modifier.height(12.dp))
 
         TextButton(onClick = onRegister) {
-            Text("Create an account", color = Color.Black)
+            Text("Create an account", color = Color.White)
         }
     }
 }

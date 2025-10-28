@@ -2,66 +2,168 @@ package com.example.aplicatie
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.aplicatie.data.UserRepository
+import com.example.aplicatie.ui.WrongAnswersActivity
 import com.example.aplicatie.ui.auth.WelcomeActivity
 import com.example.aplicatie.ui.leaderboard.LeaderboardActivity
+import com.example.aplicatie.ui.theme.AplicatieTheme
 
-class ResultActivity : AppCompatActivity() {
+class ResultActivity : ComponentActivity() {
     private val repo = UserRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_result)
 
         val score = intent.getIntExtra("score", 0)
+        val wrongQ = intent.getStringArrayListExtra("wrongQuestions") ?: arrayListOf()
+        val wrongA = intent.getStringArrayListExtra("wrongCorrectAnswers") ?: arrayListOf()
+
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val username = prefs.getString("username", null)
-        val wrongQuestions = intent.getStringArrayListExtra("wrongQuestions") ?: arrayListOf()
-        val wrongCorrectAnswers = intent.getStringArrayListExtra("wrongCorrectAnswers") ?: arrayListOf()
-        findViewById<TextView>(R.id.result_text).text = "Finale score: $score"
 
-        if (username != null) {
-            repo.getHighScore(username) { highScore ->
-                if (highScore == null) {
-                    findViewById<TextView>(R.id.high_score_text).text = "Maximum score: unknown"
-                } else {
-                    if (score > highScore) {
-                        repo.updateHighScore(username, score)
-                        findViewById<TextView>(R.id.high_score_text).text = "Maximum score: $score"
-                    } else {
-                        findViewById<TextView>(R.id.high_score_text).text = "Maximum score: $highScore"
-                    }
+        setContent {
+            AplicatieTheme {
+                Surface {
+                    ResultScreen(
+                        score = score,
+                        username = username,
+                        repo = repo,
+                        wrongQuestions = wrongQ,
+                        wrongCorrectAnswers = wrongA,
+                        onPlayAgain = {
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish()
+                        },
+                        onLeaderboard = {
+                            startActivity(
+                                Intent(this, LeaderboardActivity::class.java)
+                                    .putExtra("username", username)
+                            )
+                        },
+                        onWrong = {
+                            startActivity(
+                                Intent(this, WrongAnswersActivity::class.java)
+                                    .putStringArrayListExtra("wrongQuestions", wrongQ)
+                                    .putStringArrayListExtra("wrongCorrectAnswers", wrongA)
+                            )
+                        },
+                        onLogout = {
+                            prefs.edit().remove("username").apply()
+                            val i = Intent(this, WelcomeActivity::class.java)
+                            i.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(i)
+                        }
+                    )
                 }
             }
         }
+    }
+}
 
-        findViewById<Button>(R.id.play_again_button).setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
+@Composable
+private fun ResultScreen(
+    score: Int,
+    username: String?,
+    repo: UserRepository,
+    wrongQuestions: List<String>,
+    wrongCorrectAnswers: List<String>,
+    onPlayAgain: () -> Unit,
+    onLeaderboard: () -> Unit,
+    onWrong: () -> Unit,
+    onLogout: () -> Unit
+) {
+    // light purple background
+    val lightPurple = Color(0xFF98A5D6)
 
-        findViewById<Button>(R.id.view_leaderboard_button).setOnClickListener {
-            val i = Intent(this, LeaderboardActivity::class.java)
-            i.putExtra("username", username)
-            startActivity(i)
-        }
+    var high by remember { mutableStateOf<Int?>(null) }
 
-        findViewById<Button>(R.id.logout_button).setOnClickListener {
-            prefs.edit().remove("username").apply()
-            val i = Intent(this, WelcomeActivity::class.java)
-            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(i)
+    // fetch & update high score once
+    LaunchedEffect(username, score) {
+        if (username != null) {
+            repo.getHighScore(username) { hs ->
+                if (hs == null || score > hs) {
+                    repo.updateHighScore(username, score)
+                    high = score
+                } else {
+                    high = hs
+                }
+            }
         }
-        // buton: See Wrong Questions
-        findViewById<Button>(R.id.see_wrong_button).setOnClickListener {
-            val wrongQuestions = intent.getStringArrayListExtra("wrongQuestions") ?: arrayListOf()
-            val i = Intent(this, com.example.aplicatie.ui.WrongAnswersActivity::class.java)
-            i.putStringArrayListExtra("wrongQuestions", wrongQuestions)
-            i.putStringArrayListExtra("wrongCorrectAnswers", wrongCorrectAnswers)
-            startActivity(i)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightPurple)
+            .padding(24.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Results",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Final score: $score",
+                fontSize = 22.sp,
+                color = Color.Black
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "High score: ${high ?: "loading…"}",
+                fontSize = 18.sp,
+                color = Color.Black
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            Button(
+                onClick = onPlayAgain,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Play Again") }
+
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = onWrong,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Wrong Questions") }
+
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = onLeaderboard,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("View Leaderboard") }
+
+            Spacer(Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = onLogout,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Logout") }
         }
     }
 }

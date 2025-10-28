@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aplicatie.MainActivity
@@ -92,12 +93,12 @@ private fun RegisterScreen(
         // Top bar with strong contrast (primary bg + white text)
         Text(
             text = "Create account",
-            fontSize = 28.sp,
-            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 24.sp,                // a bit smaller
+            color = Color.White,             // force white
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(vertical = 16.dp),
+                .padding(top = 8.dp),
+            textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.height(24.dp))
