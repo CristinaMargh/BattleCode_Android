@@ -8,13 +8,24 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.content.edit
+import androidx.lifecycle.lifecycleScope
 import com.example.aplicatie.ui.MainScreen
 import com.example.aplicatie.ui.theme.AplicatieTheme
+import com.example.aplicatie.util.LocationLanguage
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+            // request perm location
+        // înainte de setContent (sau imediat după), o singură dată la pornire:
+        LocationLanguage.requestLocationPermission(this)
+
+        lifecycleScope.launch {
+            // salvează "ro"/"en"/"de" în SharedPreferences (LocationLanguage.PREFS/PREF_LANG)
+            LocationLanguage.detectAndSaveLanguage(this@MainActivity)
+        }
 
         // read saved theme before composing
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)

@@ -11,42 +11,74 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.aplicatie.data.UserRepository
+import com.example.aplicatie.util.LocationLanguage   // <-- important
 
 class QuizActivity : AppCompatActivity() {
 
-    // ---------- Questions by difficulty ----------
-    private val easyQuestions = listOf(
-        Question("What value does the `main()` function return in C/C++ if everything went successfully?",
+    // ---------------------- EN questions ----------------------
+    private val enEasy = listOf(
+        Q("What value does the `main()` function return in C/C++ if everything went successfully?",
             listOf("0", "1", "-1", "void"), 0),
-        Question("Which statement completely stops the execution of a `for` loop?",
+        Q("Which statement completely stops the execution of a `for` loop?",
             listOf("continue", "break", "return", "exit"), 1),
-        Question("How is the NULL character represented in ASCII?",
-            listOf("'\\0'", "'NULL'", "'\\n'", "'0'"), 0)
+        Q("How is the NULL character represented in ASCII?",
+            listOf("'\\0'", "'NULL'", "'\\n'", "'0'"), 0),
     )
-
-    private val mediumQuestions = listOf(
-        Question("What is the name of the memory area where local variables are allocated?",
+    private val enMedium = listOf(
+        Q("What is the name of the memory area where local variables are allocated?",
             listOf("Heap", "Stack", "Data segment", "Text segment"), 1),
-        Question("Which data structure is used by the call stack of executing functions?",
+        Q("Which data structure is used by the call stack of executing functions?",
             listOf("Queue", "Heap", "Stack", "Tree"), 2),
-        Question("Which operator in C/C++ is used to access members via a pointer to a struct?",
-            listOf(".", "->", "::", "#"), 1)
+        Q("Which operator in C/C++ is used to access members via a pointer to a struct?",
+            listOf(".", "->", "::", "#"), 1),
     )
-
-    private val hardQuestions = listOf(
-        Question("What is the typical size of an `int` in C on modern (64-bit) systems?",
+    private val enHard = listOf(
+        Q("What is the typical size of an `int` in C on modern (64-bit) systems?",
             listOf("2 bytes", "4 bytes", "8 bytes", "Depends on the compiler"), 1),
-        Question("What is the latest C++ standard (as of 2023)?",
+        Q("What is the latest C++ standard (as of 2023)?",
             listOf("C++11", "C++17", "C++20", "C++23"), 3),
-        Question("Which terminal command compiles a `main.c` file with GCC?",
+        Q("Which terminal command compiles a `main.c` file with GCC?",
             listOf("gcc main.c", "g++ main.c", "make main", "compile main.c"), 0),
-        Question("What is the average time complexity for searching in a `hash map` (C++/Java)?",
-            listOf("O(n)", "O(1)", "O(log n)", "O(n log n)"), 1)
+        Q("What is the average time complexity for searching in a `hash map` (C++/Java)?",
+            listOf("O(n)", "O(1)", "O(log n)", "O(n log n)"), 1),
     )
 
-    // Will be filled based on difficulty
-    private var questions: List<Question> = emptyList()
+    // ---------------------- RO questions ----------------------
+    private val roEasy = listOf(
+        Q("Ce valoare întoarce funcția `main()` în C/C++ dacă programul s-a terminat cu succes?",
+            listOf("0", "1", "-1", "void"), 0),
+        Q("Ce instrucțiune oprește complet execuția unui ciclu `for`?",
+            listOf("continue", "break", "return", "exit"), 1),
+        Q("Cum este reprezentat caracterul NULL în ASCII?",
+            listOf("'\\0'", "'NULL'", "'\\n'", "'0'"), 0),
+    )
+    private val roMedium = listOf(
+        Q("Cum se numește zona de memorie unde sunt alocate variabilele locale?",
+            listOf("Heap", "Stack", "Data segment", "Text segment"), 1),
+        Q("Ce structură de date folosește stiva apelurilor de funcții?",
+            listOf("Queue", "Heap", "Stack", "Tree"), 2),
+        Q("Ce operator în C/C++ este folosit pentru a accesa membrii printr-un pointer la structură?",
+            listOf(".", "->", "::", "#"), 1),
+    )
+    private val roHard = listOf(
+        Q("Care este dimensiunea tipică a unui `int` în C pe sisteme moderne (64-bit)?",
+            listOf("2 bytes", "4 bytes", "8 bytes", "Depinde de compilator"), 1),
+        Q("Care este cel mai recent standard C++ (în 2023)?",
+            listOf("C++11", "C++17", "C++20", "C++23"), 3),
+        Q("Ce comandă compilează fișierul `main.c` folosind GCC?",
+            listOf("gcc main.c", "g++ main.c", "make main", "compile main.c"), 0),
+        Q("Care este complexitatea medie a căutării într-un `hash map` (C++/Java)?",
+            listOf("O(n)", "O(1)", "O(log n)", "O(n log n)"), 1),
+    )
 
+    // ---------------------- DE questions (exemplu: EN duplicat) ----------------------
+    // Le poți traduce ulterior; momentan folosim aceleași ca EN ca să demonstrezi funcționalitatea.
+    private val deEasy = enEasy
+    private val deMedium = enMedium
+    private val deHard = enHard
+
+    // ---------------------- runtime state ----------------------
+    private lateinit var questions: List<Q>
     private val wrongQuestions = mutableListOf<String>()
     private val wrongCorrectAnswers = mutableListOf<String>()
 
@@ -62,6 +94,7 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var angryCat: ImageView
     private lateinit var nextQuestionButton: Button
     private lateinit var currentUsername: String
+    private var currentLang: String = "en"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,13 +103,13 @@ class QuizActivity : AppCompatActivity() {
         // Username (optional)
         currentUsername = intent.getStringExtra("username") ?: "ANONIM"
 
-        // Difficulty -> select questions
+        // ----- language selected by LocationLanguage (default "en")
+        currentLang = getSharedPreferences(LocationLanguage.PREFS, MODE_PRIVATE)
+            .getString(LocationLanguage.PREF_LANG, "en") ?: "en"
+
+        // ----- Difficulty + Language -> select pool
         val difficulty = intent.getStringExtra("difficulty") ?: "medium"
-        questions = when (difficulty) {
-            "easy" -> easyQuestions.shuffled().take(5)
-            "hard" -> hardQuestions.shuffled().take(5)
-            else -> mediumQuestions.shuffled().take(5)
-        }
+        questions = pickPool(currentLang, difficulty).shuffled().take(5)
 
         // Bind views
         answerButtons = listOf(
@@ -99,13 +132,30 @@ class QuizActivity : AppCompatActivity() {
         showQuestion()
     }
 
+    /** Select pool based on language + difficulty. */
+    private fun pickPool(lang: String, difficulty: String): List<Q> = when (lang) {
+        "ro" -> when (difficulty) {
+            "easy" -> roEasy
+            "hard" -> roHard
+            else -> roMedium
+        }
+        "de" -> when (difficulty) {
+            "easy" -> deEasy
+            "hard" -> deHard
+            else -> deMedium
+        }
+        else -> when (difficulty) { // "en" fallback
+            "easy" -> enEasy
+            "hard" -> enHard
+            else -> enMedium
+        }
+    }
+
     /** Short vibration on wrong answer */
     private fun vibrateError() {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(
-                VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE)
-            )
+            vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
         } else {
             @Suppress("DEPRECATION")
             vibrator.vibrate(200)
@@ -128,20 +178,20 @@ class QuizActivity : AppCompatActivity() {
         angryCat.visibility = View.GONE
         nextQuestionButton.visibility = View.GONE
 
-        val question = questions[currentQuestionIndex]
-        questionText.text = question.text
+        val q = questions[currentQuestionIndex]
+        questionText.text = q.text
 
         answerButtons.forEachIndexed { index, button ->
             button.setBackgroundResource(R.drawable.r_a_b)
             button.setTextColor(Color.BLACK)
             button.isClickable = true
-            button.text = question.options[index]
+            button.text = q.options[index]
 
             button.setOnClickListener {
                 timer.cancel()
                 val timeTaken = SystemClock.elapsedRealtime() - startTime
 
-                if (index == question.correctAnswerIndex) {
+                if (index == q.correctAnswerIndex) {
                     score += calculateScore(timeTaken)
                     UserRepository().updateHighScore(currentUsername, score)
                     button.setBackgroundResource(R.drawable.answer_correct)
@@ -152,12 +202,12 @@ class QuizActivity : AppCompatActivity() {
                     angryCat.visibility = View.VISIBLE
                     angryCat.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up))
                     vibrateError()
-                    wrongQuestions.add(question.text)
-                    wrongCorrectAnswers.add(question.options[question.correctAnswerIndex])
+                    wrongQuestions.add(q.text)
+                    wrongCorrectAnswers.add(q.options[q.correctAnswerIndex])
                 }
 
                 answerButtons.forEach { it.isClickable = false }
-                answerButtons[question.correctAnswerIndex].setBackgroundResource(R.drawable.answer_correct)
+                answerButtons[q.correctAnswerIndex].setBackgroundResource(R.drawable.answer_correct)
                 nextQuestionButton.visibility = View.VISIBLE
             }
         }
@@ -169,7 +219,12 @@ class QuizActivity : AppCompatActivity() {
     private fun startTimer() {
         timer = object : CountDownTimer(10_000, 1_000) {
             override fun onTick(millisUntilFinished: Long) {
-                timerText.text = "Time left: ${millisUntilFinished / 1000}s"
+                val seconds = millisUntilFinished / 1000
+                timerText.text = when (currentLang) {
+                    "ro" -> "Timp rămas: ${seconds}s"
+                    "de" -> "Verbleibende Zeit: ${seconds}s"
+                    else -> "Time left: ${seconds}s"
+                }
             }
 
             override fun onFinish() {
@@ -189,5 +244,5 @@ class QuizActivity : AppCompatActivity() {
     private fun calculateScore(timeTaken: Long): Int =
         (10_000 - timeTaken).toInt() / 1000
 
-    data class Question(val text: String, val options: List<String>, val correctAnswerIndex: Int)
+    data class Q(val text: String, val options: List<String>, val correctAnswerIndex: Int)
 }
