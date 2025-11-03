@@ -11,73 +11,277 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.aplicatie.data.UserRepository
-import com.example.aplicatie.util.LocationLanguage   // <-- important
+import com.example.aplicatie.util.LocationLanguage
 
 class QuizActivity : AppCompatActivity() {
 
-    // ---------------------- EN questions ----------------------
-    private val enEasy = listOf(
-        Q("What value does the `main()` function return in C/C++ if everything went successfully?",
-            listOf("0", "1", "-1", "void"), 0),
-        Q("Which statement completely stops the execution of a `for` loop?",
-            listOf("continue", "break", "return", "exit"), 1),
-        Q("How is the NULL character represented in ASCII?",
-            listOf("'\\0'", "'NULL'", "'\\n'", "'0'"), 0),
-    )
-    private val enMedium = listOf(
-        Q("What is the name of the memory area where local variables are allocated?",
-            listOf("Heap", "Stack", "Data segment", "Text segment"), 1),
-        Q("Which data structure is used by the call stack of executing functions?",
-            listOf("Queue", "Heap", "Stack", "Tree"), 2),
-        Q("Which operator in C/C++ is used to access members via a pointer to a struct?",
-            listOf(".", "->", "::", "#"), 1),
-    )
-    private val enHard = listOf(
-        Q("What is the typical size of an `int` in C on modern (64-bit) systems?",
-            listOf("2 bytes", "4 bytes", "8 bytes", "Depends on the compiler"), 1),
-        Q("What is the latest C++ standard (as of 2023)?",
-            listOf("C++11", "C++17", "C++20", "C++23"), 3),
-        Q("Which terminal command compiles a `main.c` file with GCC?",
-            listOf("gcc main.c", "g++ main.c", "make main", "compile main.c"), 0),
-        Q("What is the average time complexity for searching in a `hash map` (C++/Java)?",
-            listOf("O(n)", "O(1)", "O(log n)", "O(n log n)"), 1),
+    // ========== ENGLISH QUESTIONS ==========
+
+    // C++
+    // ---------- EN C++ EASY ----------
+    private val enCppEasy = listOf(
+        Q("In C++, which header is needed for cout?",
+            listOf("<iostream>", "<stdio.h>", "<vector>", "<string>"), 0),
+        Q("What does '//' start?",
+            listOf("A class", "A single-line comment", "A loop", "A namespace"), 1),
+        Q("Which symbol ends a C++ statement?",
+            listOf(":", ";", ".", ","), 1),
+        Q("Which of these is a valid C++ type?",
+            listOf("number", "int", "digit", "var"), 1),
+        Q("Which keyword is used to declare a constant?",
+            listOf("final", "const", "static", "let"), 1),
+        Q("Which of these is the correct main signature (simple)?",
+            listOf("int main()", "void main()", "main()", "func main()"), 0),
+        Q("Which operator is used for assignment?",
+            listOf("=", "==", ":=", "->"), 0),
+        Q("Which of these is a correct comment style in C++?",
+            listOf("# comment", "// comment", "-- comment", "% comment"), 1)
     )
 
-    // ---------------------- RO questions ----------------------
-    private val roEasy = listOf(
-        Q("Ce valoare întoarce funcția `main()` în C/C++ dacă programul s-a terminat cu succes?",
-            listOf("0", "1", "-1", "void"), 0),
-        Q("Ce instrucțiune oprește complet execuția unui ciclu `for`?",
-            listOf("continue", "break", "return", "exit"), 1),
-        Q("Cum este reprezentat caracterul NULL în ASCII?",
-            listOf("'\\0'", "'NULL'", "'\\n'", "'0'"), 0),
-    )
-    private val roMedium = listOf(
-        Q("Cum se numește zona de memorie unde sunt alocate variabilele locale?",
-            listOf("Heap", "Stack", "Data segment", "Text segment"), 1),
-        Q("Ce structură de date folosește stiva apelurilor de funcții?",
-            listOf("Queue", "Heap", "Stack", "Tree"), 2),
-        Q("Ce operator în C/C++ este folosit pentru a accesa membrii printr-un pointer la structură?",
-            listOf(".", "->", "::", "#"), 1),
-    )
-    private val roHard = listOf(
-        Q("Care este dimensiunea tipică a unui `int` în C pe sisteme moderne (64-bit)?",
-            listOf("2 bytes", "4 bytes", "8 bytes", "Depinde de compilator"), 1),
-        Q("Care este cel mai recent standard C++ (în 2023)?",
-            listOf("C++11", "C++17", "C++20", "C++23"), 3),
-        Q("Ce comandă compilează fișierul `main.c` folosind GCC?",
-            listOf("gcc main.c", "g++ main.c", "make main", "compile main.c"), 0),
-        Q("Care este complexitatea medie a căutării într-un `hash map` (C++/Java)?",
-            listOf("O(n)", "O(1)", "O(log n)", "O(n log n)"), 1),
+    // ---------- EN C++ MEDIUM ----------
+    private val enCppMedium = listOf(
+        Q("Which keyword creates an object on the heap?",
+            listOf("new", "malloc", "alloc", "create"), 0),
+        Q("What does 'virtual' enable in C++?",
+            listOf("polymorphism", "multithreading", "templates", "namespaces"), 0),
+        Q("Which container provides fast random access?",
+            listOf("std::vector", "std::list", "std::queue", "std::stack"), 0),
+        Q("Which header do you include for std::vector?",
+            listOf("<vector>", "<array>", "<list>", "<deque>"), 0),
+        Q("What does RAII stand for?",
+            listOf("Resource Acquisition Is Initialization",
+                "Runtime Allocation Is Immediate",
+                "Random Access In Iterators",
+                "Reference And Index Interface"), 0),
+        Q("What does '&' mean in a function parameter (e.g. int& x)?",
+            listOf("pointer", "reference", "array", "rvalue"), 1),
+        Q("Which of these is NOT a standard container?",
+            listOf("std::map", "std::set", "std::hashmap", "std::deque"), 2),
+        Q("Which C++ cast is safest / most explicit?",
+            listOf("static_cast", "reinterpret_cast", "C-style cast", "const_cast"), 0)
     )
 
-    // ---------------------- DE questions (exemplu: EN duplicat) ----------------------
-    // Le poți traduce ulterior; momentan folosim aceleași ca EN ca să demonstrezi funcționalitatea.
-    private val deEasy = enEasy
-    private val deMedium = enMedium
-    private val deHard = enHard
+    // ---------- EN C++ HARD ----------
+    private val enCppHard = listOf(
+        Q("What is the time complexity of std::sort on average?",
+            listOf("O(n)", "O(n log n)", "O(log n)", "O(n^2)"), 1),
+        Q("Which container keeps keys ordered?",
+            listOf("std::map", "std::unordered_map", "std::vector", "std::queue"), 0),
+        Q("What is the underlying structure typically used by std::map?",
+            listOf("Red-Black Tree", "Hash table", "Array", "Skip list"), 0),
+        Q("Which C++11 feature allows functions to return different types depending on template params?",
+            listOf("auto return type", "decltype", "lambda", "override"), 1),
+        Q("What does 'move semantics' mainly optimize?",
+            listOf("Copying large objects", "Virtual functions", "Multiple inheritance", "Preprocessor directives"), 0),
+        Q("Which smart pointer expresses shared ownership?",
+            listOf("std::unique_ptr", "std::shared_ptr", "std::auto_ptr", "std::raw_ptr"), 1),
+        Q("Which keyword prevents a class from being inherited?",
+            listOf("final", "sealed", "static", "private"), 0),
+        Q("What does the 'noexcept' specifier tell the compiler?",
+            listOf("Function will not throw", "Function is inline", "Function is virtual", "Function is pure"), 0)
+    )
 
-    // ---------------------- runtime state ----------------------
+
+    // Java
+    // ---------- EN JAVA EASY ----------
+    private val enJavaEasy = listOf(
+        Q(
+            "Which keyword defines a class in Java?",
+            listOf("class", "struct", "object", "def"),
+            0
+        ),
+        Q(
+            "Which method is the entry point in Java?",
+            listOf("start()", "run()", "main()", "init()"),
+            2
+        ),
+        Q(
+            "Which of these is a valid Java identifier?",
+            listOf("1name", "name_1", "name-1", "name!"),
+            1
+        ),
+        Q(
+            "Which keyword is used to create a new object?",
+            listOf("new", "create", "make", "alloc"),
+            0
+        ),
+        Q(
+            "Which type is used for decimal numbers?",
+            listOf("int", "double", "char", "boolean"),
+            1
+        ),
+        Q(
+            "Which package is imported automatically?",
+            listOf("java.lang", "java.util", "java.io", "none"),
+            0
+        ),
+        Q(
+            "How do you write a single-line comment in Java?",
+            listOf("// comment", "# comment", "-- comment", "/* comment */"),
+            0
+        )
+    )
+
+    // ---------- EN JAVA MEDIUM ----------
+    private val enJavaMedium = listOf(
+        Q(
+            "Which collection doesn't allow duplicates?",
+            listOf("List", "Set", "ArrayList", "Queue"),
+            1
+        ),
+        Q(
+            "What does 'static' mean on a method?",
+            listOf("belongs to the class", "is final", "is abstract", "runs faster"),
+            0
+        ),
+        Q(
+            "Which keyword is used to handle exceptions?",
+            listOf("try", "error", "catchError", "throwCatch"),
+            0
+        ),
+        Q(
+            "Which class is the root of all classes in Java?",
+            listOf("Object", "Base", "Root", "Core"),
+            0
+        ),
+        Q(
+            "Which interface is implemented by ArrayList?",
+            listOf("List", "Map", "Set", "Queue"),
+            0
+        ),
+        Q(
+            "What is the default value of a boolean field?",
+            listOf("true", "false", "null", "0"),
+            1
+        ),
+        Q(
+            "Which access modifier makes a member visible only in the same package?",
+            listOf("public", "private", "protected", "no modifier (package-private)"),
+            3
+        ),
+        Q(
+            "What does 'final' on a variable mean?",
+            listOf("cannot be changed", "is static", "is public", "is synchronized"),
+            0
+        )
+    )
+
+    // ---------- EN JAVA HARD ----------
+    private val enJavaHard = listOf(
+        Q(
+            "Which interface is used for lambda expressions in Java 8?",
+            listOf("Functional interface", "Runnable", "Serializable", "AutoCloseable"),
+            0
+        ),
+        Q(
+            "Which keyword is used to inherit a class?",
+            listOf("inherits", "extends", "implements", "super"),
+            1
+        ),
+        Q(
+            "Which keyword is used to implement an interface?",
+            listOf("extends", "implements", "interface", "override"),
+            1
+        ),
+        Q(
+            "Which collection is thread-safe by default?",
+            listOf("Vector", "ArrayList", "LinkedList", "HashSet"),
+            0
+        ),
+        Q(
+            "What does the 'volatile' keyword guarantee?",
+            listOf("visibility between threads", "more speed", "immutability", "serialization"),
+            0
+        ),
+        Q(
+            "Which part of the JVM actually executes the bytecode?",
+            listOf("JIT / Interpreter", "GC", "ClassLoader", "Javadoc"),
+            0
+        ),
+        Q(
+            "Which exception must be either caught or declared?",
+            listOf("IOException", "RuntimeException", "NullPointerException", "ArithmeticException"),
+            0
+        ),
+        Q(
+            "Which statement is true about garbage collection?",
+            listOf("It frees unreachable objects", "It must be called manually", "It deletes files", "It runs only once"),
+            0
+        )
+    )
+
+
+    // Python
+    private val enPythonEasy = listOf(
+        Q("Which symbol starts a comment in Python?", listOf("#", "//", "/* */", "--"), 0),
+        Q("How do you print in Python 3?", listOf("echo()", "print()", "printf()", "cout <<"), 1),
+    )
+    private val enPythonMedium = listOf(
+        Q("What is a correct list literal?", listOf("{1,2,3}", "(1,2,3)", "[1,2,3]", "<1,2,3>"), 2),
+        Q("How do you define a function?", listOf("func my()", "def my()", "function my()", "fn my()"), 1),
+    )
+    private val enPythonHard = listOf(
+        Q("Which keyword is used for exception handling?", listOf("catch", "handle", "try", "except"), 3),
+        Q("What does 'len()' return?", listOf("type", "length", "address", "hash"), 1),
+    )
+
+
+    // ========== ROMANIAN QUESTIONS ==========
+
+    // C++
+    private val roCppEasy = listOf(
+        Q("În C++, ce header e necesar pentru cout?", listOf("<iostream>", "<stdio.h>", "<vector>", "<string>"), 0),
+        Q("Ce începe cu '//'?", listOf("O clasă", "Un comentariu pe o linie", "Un ciclu", "Un namespace"), 1),
+    )
+    private val roCppMedium = listOf(
+        Q("Ce cuvânt cheie alocă pe heap?", listOf("new", "malloc", "alloc", "create"), 0),
+        Q("Ce permite cuvântul 'virtual' în C++?", listOf("polimorfism", "multithreading", "template-uri", "namespace-uri"), 0),
+    )
+    private val roCppHard = listOf(
+        Q("Care e complexitatea medie a lui std::sort?", listOf("O(n)", "O(n log n)", "O(log n)", "O(n^2)"), 1),
+        Q("Ce container păstrează cheile ordonate?", listOf("std::map", "std::unordered_map", "std::vector", "std::queue"), 0),
+    )
+
+    // Java
+    private val roJavaEasy = listOf(
+        Q("Ce cuvânt definește o clasă în Java?", listOf("class", "struct", "object", "def"), 0),
+        Q("Ce metodă e punctul de intrare în Java?", listOf("start()", "run()", "main()", "init()"), 2),
+    )
+    private val roJavaMedium = listOf(
+        Q("Ce colecție nu permite duplicate?", listOf("List", "Set", "ArrayList", "Queue"), 1),
+        Q("Ce înseamnă 'static' pe o metodă?", listOf("aparține clasei", "este final", "este abstract", "rulează mai repede"), 0),
+    )
+    private val roJavaHard = listOf(
+        Q("Ce interfață se folosește la lambda în Java 8?", listOf("Functional interface", "Runnable", "Serializable", "AutoCloseable"), 0),
+        Q("Ce cuvânt se folosește pentru moștenire?", listOf("inherits", "extends", "implements", "super"), 1),
+    )
+
+    // Python
+    private val roPythonEasy = listOf(
+        Q("Ce simbol începe un comentariu în Python?", listOf("#", "//", "/* */", "--"), 0),
+        Q("Cum afișezi în Python 3?", listOf("echo()", "print()", "printf()", "cout <<"), 1),
+    )
+    private val roPythonMedium = listOf(
+        Q("Care e un literal de listă corect?", listOf("{1,2,3}", "(1,2,3)", "[1,2,3]", "<1,2,3>"), 2),
+        Q("Cum definești o funcție?", listOf("func f()", "def f()", "function f()", "fn f()"), 1),
+    )
+    private val roPythonHard = listOf(
+        Q("Ce cuvânt se folosește la tratarea excepțiilor?", listOf("catch", "handle", "try", "except"), 3),
+        Q("Ce întoarce 'len()'?", listOf("tipul", "lungimea", "adresa", "hash-ul"), 1),
+    )
+
+    // German -> deocamdată copiem engleza
+    private val deCppEasy = enCppEasy
+    private val deCppMedium = enCppMedium
+    private val deCppHard = enCppHard
+    private val deJavaEasy = enJavaEasy
+    private val deJavaMedium = enJavaMedium
+    private val deJavaHard = enJavaHard
+    private val dePythonEasy = enPythonEasy
+    private val dePythonMedium = enPythonMedium
+    private val dePythonHard = enPythonHard
+
+    // runtime
     private lateinit var questions: List<Q>
     private val wrongQuestions = mutableListOf<String>()
     private val wrongCorrectAnswers = mutableListOf<String>()
@@ -100,18 +304,17 @@ class QuizActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
 
-        // Username (optional)
         currentUsername = intent.getStringExtra("username") ?: "ANONIM"
 
-        // ----- language selected by LocationLanguage (default "en")
+        // language saved by LocationLanguage
         currentLang = getSharedPreferences(LocationLanguage.PREFS, MODE_PRIVATE)
             .getString(LocationLanguage.PREF_LANG, "en") ?: "en"
 
-        // ----- Difficulty + Language -> select pool
+        val topic = intent.getStringExtra("topic") ?: "cpp"       // cpp / java / python
         val difficulty = intent.getStringExtra("difficulty") ?: "medium"
-        questions = pickPool(currentLang, difficulty).shuffled().take(5)
 
-        // Bind views
+        questions = pickQuestions(currentLang, topic, difficulty).shuffled().take(5)
+
         answerButtons = listOf(
             findViewById(R.id.answer1),
             findViewById(R.id.answer2),
@@ -132,26 +335,68 @@ class QuizActivity : AppCompatActivity() {
         showQuestion()
     }
 
-    /** Select pool based on language + difficulty. */
-    private fun pickPool(lang: String, difficulty: String): List<Q> = when (lang) {
-        "ro" -> when (difficulty) {
-            "easy" -> roEasy
-            "hard" -> roHard
-            else -> roMedium
-        }
-        "de" -> when (difficulty) {
-            "easy" -> deEasy
-            "hard" -> deHard
-            else -> deMedium
-        }
-        else -> when (difficulty) { // "en" fallback
-            "easy" -> enEasy
-            "hard" -> enHard
-            else -> enMedium
+    private fun pickQuestions(lang: String, topic: String, difficulty: String): List<Q> {
+        return when (lang) {
+            "ro" -> pickRo(topic, difficulty)
+            "de" -> pickDe(topic, difficulty)
+            else -> pickEn(topic, difficulty)
         }
     }
 
-    /** Short vibration on wrong answer */
+    private fun pickEn(topic: String, difficulty: String): List<Q> = when (topic) {
+        "java" -> when (difficulty) {
+            "easy" -> enJavaEasy
+            "hard" -> enJavaHard
+            else -> enJavaMedium
+        }
+        "python" -> when (difficulty) {
+            "easy" -> enPythonEasy
+            "hard" -> enPythonHard
+            else -> enPythonMedium
+        }
+        else -> when (difficulty) { // cpp
+            "easy" -> enCppEasy
+            "hard" -> enCppHard
+            else -> enCppMedium
+        }
+    }
+
+    private fun pickRo(topic: String, difficulty: String): List<Q> = when (topic) {
+        "java" -> when (difficulty) {
+            "easy" -> roJavaEasy
+            "hard" -> roJavaHard
+            else -> roJavaMedium
+        }
+        "python" -> when (difficulty) {
+            "easy" -> roPythonEasy
+            "hard" -> roPythonHard
+            else -> roPythonMedium
+        }
+        else -> when (difficulty) { // cpp
+            "easy" -> roCppEasy
+            "hard" -> roCppHard
+            else -> roCppMedium
+        }
+    }
+
+    private fun pickDe(topic: String, difficulty: String): List<Q> = when (topic) {
+        "java" -> when (difficulty) {
+            "easy" -> deJavaEasy
+            "hard" -> deJavaHard
+            else -> deJavaMedium
+        }
+        "python" -> when (difficulty) {
+            "easy" -> dePythonEasy
+            "hard" -> dePythonHard
+            else -> dePythonMedium
+        }
+        else -> when (difficulty) { // cpp
+            "easy" -> deCppEasy
+            "hard" -> deCppHard
+            else -> deCppMedium
+        }
+    }
+
     private fun vibrateError() {
         val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -219,11 +464,11 @@ class QuizActivity : AppCompatActivity() {
     private fun startTimer() {
         timer = object : CountDownTimer(10_000, 1_000) {
             override fun onTick(millisUntilFinished: Long) {
-                val seconds = millisUntilFinished / 1000
+                val s = millisUntilFinished / 1000
                 timerText.text = when (currentLang) {
-                    "ro" -> "Timp rămas: ${seconds}s"
-                    "de" -> "Verbleibende Zeit: ${seconds}s"
-                    else -> "Time left: ${seconds}s"
+                    "ro" -> "Timp rămas: ${s}s"
+                    "de" -> "Verbleibende Zeit: ${s}s"
+                    else -> "Time left: ${s}s"
                 }
             }
 

@@ -10,6 +10,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import com.example.aplicatie.ui.MainScreen
+import com.example.aplicatie.ui.SelectTopicActivity
 import com.example.aplicatie.ui.theme.AplicatieTheme
 import com.example.aplicatie.util.LocationLanguage
 import kotlinx.coroutines.launch
@@ -46,7 +47,6 @@ class MainActivity : ComponentActivity() {
                     if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                 )
             }
-
             AplicatieTheme(darkTheme = isDark) {
                 MainScreen(
                     username = currentUsername,
@@ -57,10 +57,7 @@ class MainActivity : ComponentActivity() {
                     },
                     onPlay = {
                         startActivity(
-                            Intent(
-                                this@MainActivity,
-                                com.example.aplicatie.ui.ChooseDifficultyActivity::class.java
-                            ).putExtra("username", currentUsername)
+                            Intent(this@MainActivity, SelectTopicActivity::class.java).putExtra("username", currentUsername)
                         )
                     },
                     onOpenFullLeaderboard = {

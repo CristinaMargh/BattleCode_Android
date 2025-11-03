@@ -33,6 +33,8 @@
         <activity android:name=".ui.ChooseDifficultyActivity" />
         <activity android:name=".ui.WrongAnswersActivity" />
         <activity android:name=".ui.leaderboard.LeaderboardActivity" />
+        <activity android:name=".ui.SelectTopicActivity" />
+
 
 
         <!-- Launcher -->

@@ -15,34 +15,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.aplicatie.QuizActivity
 import com.example.aplicatie.ui.theme.AplicatieTheme
+import com.example.aplicatie.ui.ChooseDifficultyActivity
 
-class ChooseDifficultyActivity : ComponentActivity() {
+class SelectTopicActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val username = intent.getStringExtra("username")
-        val topic = intent.getStringExtra("topic") ?: "cpp"   // fallback
 
         setContent {
             AplicatieTheme {
-                DifficultyScreen { difficulty ->
-                    startActivity(
-                        Intent(this, QuizActivity::class.java)
-                            .putExtra("username", username)
-                            .putExtra("topic", topic)
-                            .putExtra("difficulty", difficulty)
-                    )
-                    finish()
-                }
+                TopicScreen(
+                    onTopicChosen = { topic ->
+                        startActivity(
+                            Intent(this, ChooseDifficultyActivity::class.java)
+                                .putExtra("username", username)
+                                .putExtra("topic", topic)
+                        )
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun DifficultyScreen(onChoose: (String) -> Unit) {
+private fun TopicScreen(onTopicChosen: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,26 +50,26 @@ private fun DifficultyScreen(onChoose: (String) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Choose difficulty", fontSize = 26.sp, color = Color.Black)
+        Text("Choose language/topic", fontSize = 26.sp, color = Color.Black)
         Spacer(Modifier.height(24.dp))
 
         Button(
-            onClick = { onChoose("easy") },
+            onClick = { onTopicChosen("cpp") },
             modifier = Modifier.fillMaxWidth()
-        ) { Text("Easy") }
+        ) { Text("C++") }
 
         Spacer(Modifier.height(12.dp))
 
         Button(
-            onClick = { onChoose("medium") },
+            onClick = { onTopicChosen("java") },
             modifier = Modifier.fillMaxWidth()
-        ) { Text("Medium") }
+        ) { Text("Java") }
 
         Spacer(Modifier.height(12.dp))
 
         Button(
-            onClick = { onChoose("hard") },
+            onClick = { onTopicChosen("python") },
             modifier = Modifier.fillMaxWidth()
-        ) { Text("Hard") }
+        ) { Text("Python") }
     }
 }
