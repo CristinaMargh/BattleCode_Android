@@ -6,13 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aplicatie.QuizActivity
@@ -21,20 +20,28 @@ import com.example.aplicatie.ui.theme.AplicatieTheme
 class ChooseDifficultyActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val username = intent.getStringExtra("username")
-        val topic = intent.getStringExtra("topic") ?: "cpp"   // fallback
+        val username = intent.getStringExtra("username") ?: "ANONIM"
+        val topic = intent.getStringExtra("topic") ?: "cpp"
 
         setContent {
             AplicatieTheme {
-                DifficultyScreen { difficulty ->
-                    startActivity(
-                        Intent(this, QuizActivity::class.java)
-                            .putExtra("username", username)
-                            .putExtra("topic", topic)
-                            .putExtra("difficulty", difficulty)
+                // 🔹 acest Box forțează fundalul mov deschis
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFD1C5E4)) // 💜 mov deschis aplicat direct
+                ) {
+                    ChooseDifficultyScreen(
+                        onSelectDifficulty = { difficulty ->
+                            startActivity(
+                                Intent(this@ChooseDifficultyActivity, QuizActivity::class.java)
+                                    .putExtra("username", username)
+                                    .putExtra("topic", topic)
+                                    .putExtra("difficulty", difficulty)
+                            )
+                            finish()
+                        }
                     )
-                    finish()
                 }
             }
         }
@@ -42,35 +49,58 @@ class ChooseDifficultyActivity : ComponentActivity() {
 }
 
 @Composable
-private fun DifficultyScreen(onChoose: (String) -> Unit) {
+fun ChooseDifficultyScreen(onSelectDifficulty: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF98A5D6))
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Choose difficulty", fontSize = 26.sp, color = Color.Black)
-        Spacer(Modifier.height(24.dp))
+        Text(
+            "Select Difficulty",
+            fontSize = 28.sp,
+            color = Color(0xFF4A148C), // mov închis pentru contrast
+            fontWeight = FontWeight.Bold
+        )
 
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // 🟢 EASY
         Button(
-            onClick = { onChoose("easy") },
-            modifier = Modifier.fillMaxWidth()
-        ) { Text("Easy") }
+            onClick = { onSelectDifficulty("easy") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)), // verde
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("Easy", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+        }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
+        // 🟡 MEDIUM
         Button(
-            onClick = { onChoose("medium") },
-            modifier = Modifier.fillMaxWidth()
-        ) { Text("Medium") }
+            onClick = { onSelectDifficulty("medium") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFC107)), // galben
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("Medium", color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+        }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
+        // 🔴 HARD
         Button(
-            onClick = { onChoose("hard") },
-            modifier = Modifier.fillMaxWidth()
-        ) { Text("Hard") }
+            onClick = { onSelectDifficulty("hard") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)), // roșu
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("Hard", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+        }
     }
 }
