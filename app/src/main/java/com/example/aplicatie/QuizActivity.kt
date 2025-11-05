@@ -502,6 +502,9 @@ class QuizActivity : AppCompatActivity() {
         nextQuestionButton = findViewById(R.id.next_question_button)
 
         nextQuestionButton.setOnClickListener {
+            val fade = AnimationUtils.loadAnimation(this, R.anim.fade_out)
+            questionText.startAnimation(fade)
+            answerButtons.forEach { it.startAnimation(fade) }
             currentQuestionIndex++
             showQuestion()
         }
@@ -583,6 +586,7 @@ class QuizActivity : AppCompatActivity() {
 
     private fun showQuestion() {
         if (currentQuestionIndex >= questions.size) {
+            // ... partea ta de final
             UserRepository().updateHighScore(currentUsername, score)
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("score", score)
@@ -597,20 +601,28 @@ class QuizActivity : AppCompatActivity() {
         angryCat.visibility = View.GONE
         nextQuestionButton.visibility = View.GONE
 
-        val q = questions[currentQuestionIndex]
-        questionText.text = q.text
+        val question = questions[currentQuestionIndex]
 
+        // 1) animație de intrare
+        val slideIn = AnimationUtils.loadAnimation(this, R.anim.slide_in_left)
+
+        // setezi textul întrebării
+        questionText.text = question.text
+        questionText.startAnimation(slideIn)
+
+        // pentru fiecare răspuns
         answerButtons.forEachIndexed { index, button ->
             button.setBackgroundResource(R.drawable.r_a_b)
             button.setTextColor(Color.BLACK)
             button.isClickable = true
-            button.text = q.options[index]
+            button.text = question.options[index]
+            button.startAnimation(slideIn)   // <- și butonul intră frumos
 
             button.setOnClickListener {
                 timer.cancel()
                 val timeTaken = SystemClock.elapsedRealtime() - startTime
 
-                if (index == q.correctAnswerIndex) {
+                if (index == question.correctAnswerIndex) {
                     score += calculateScore(timeTaken)
                     UserRepository().updateHighScore(currentUsername, score)
                     button.setBackgroundResource(R.drawable.answer_correct)
@@ -621,12 +633,13 @@ class QuizActivity : AppCompatActivity() {
                     angryCat.visibility = View.VISIBLE
                     angryCat.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up))
                     vibrateError()
-                    wrongQuestions.add(q.text)
-                    wrongCorrectAnswers.add(q.options[q.correctAnswerIndex])
+                    wrongQuestions.add(question.text)
+                    wrongCorrectAnswers.add(question.options[question.correctAnswerIndex])
                 }
 
+                // dezactivezi restul
                 answerButtons.forEach { it.isClickable = false }
-                answerButtons[q.correctAnswerIndex].setBackgroundResource(R.drawable.answer_correct)
+                answerButtons[question.correctAnswerIndex].setBackgroundResource(R.drawable.answer_correct)
                 nextQuestionButton.visibility = View.VISIBLE
             }
         }
