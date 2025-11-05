@@ -28,6 +28,7 @@
         <!-- Other activities -->
         <activity android:name=".QuizActivity" />
         <activity android:name=".ResultActivity" />
+        <activity android:name=".ui.QuizPrepActivity" />
         <activity android:name=".ui.auth.LoginActivity" />
         <activity android:name=".ui.auth.RegisterActivity" />
         <activity android:name=".ui.ChooseDifficultyActivity" />

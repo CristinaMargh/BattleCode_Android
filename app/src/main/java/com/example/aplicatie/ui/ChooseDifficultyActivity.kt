@@ -34,7 +34,7 @@ class ChooseDifficultyActivity : ComponentActivity() {
                     ChooseDifficultyScreen(
                         onSelectDifficulty = { difficulty ->
                             startActivity(
-                                Intent(this@ChooseDifficultyActivity, QuizActivity::class.java)
+                                Intent(this@ChooseDifficultyActivity, QuizPrepActivity::class.java)
                                     .putExtra("username", username)
                                     .putExtra("topic", topic)
                                     .putExtra("difficulty", difficulty)
