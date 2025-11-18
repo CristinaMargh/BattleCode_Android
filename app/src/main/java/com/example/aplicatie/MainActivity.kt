@@ -67,7 +67,17 @@ class MainActivity : ComponentActivity() {
                                 com.example.aplicatie.ui.leaderboard.LeaderboardActivity::class.java
                             ).putExtra("username", currentUsername)
                         )
+                    },
+                    onOpenLearningMode = {
+                        startActivity(
+                            Intent(
+                                this@MainActivity,
+                                com.example.aplicatie.ui.learning.SelectLearningTopicActivity::class.java
+                            )
+                        )
                     }
+
+
                 )
             }
         }

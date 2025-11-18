@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import com.example.aplicatie.util.StreakManager
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,8 @@ class ResultActivity : ComponentActivity() {
 
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val username = prefs.getString("username", null)
+        //am facut un quiz azi
+        StreakManager.onQuizFinished(this)
 
         setContent {
             AplicatieTheme {

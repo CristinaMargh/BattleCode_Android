@@ -586,8 +586,11 @@ class QuizActivity : AppCompatActivity() {
 
     private fun showQuestion() {
         if (currentQuestionIndex >= questions.size) {
-            // ... partea ta de final
+
             UserRepository().updateHighScore(currentUsername, score)
+            // actualizare Streak
+            com.example.aplicatie.util.StreakManager.onQuizFinished(this)
+
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("score", score)
             intent.putStringArrayListExtra("wrongQuestions", ArrayList(wrongQuestions))

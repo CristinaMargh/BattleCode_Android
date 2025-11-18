@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 
     <application
         android:allowBackup="true"
@@ -35,6 +37,9 @@
         <activity android:name=".ui.WrongAnswersActivity" />
         <activity android:name=".ui.leaderboard.LeaderboardActivity" />
         <activity android:name=".ui.SelectTopicActivity" />
+        <activity android:name=".ui.learning.LearningModeActivity" />
+        <activity android:name=".ui.learning.SelectLearningTopicActivity" />
+
 
 
 

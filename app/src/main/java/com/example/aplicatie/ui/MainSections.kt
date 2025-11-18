@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -15,6 +16,11 @@ import androidx.compose.ui.unit.sp
 import com.example.aplicatie.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import androidx.compose.ui.platform.LocalContext
+import com.example.aplicatie.util.StreakManager
+import androidx.compose.material3.Text
+
+
 
 @Composable
 fun MainScreen(
@@ -22,7 +28,8 @@ fun MainScreen(
     isDark: Boolean,
     onToggleDark: (Boolean) -> Unit,
     onPlay: () -> Unit,
-    onOpenFullLeaderboard: () -> Unit
+    onOpenFullLeaderboard: () -> Unit,
+    onOpenLearningMode: () -> Unit
 ) {
     var tab by remember { mutableStateOf(MainTab.Profile) }
 
@@ -81,10 +88,42 @@ fun MainScreen(
 
             Spacer(Modifier.height(28.dp))
 
+//            Button(
+//                onClick = onPlay,
+//                modifier = Modifier.width(200.dp)
+//            ) { Text("Play", fontSize = 18.sp) }
+//            Spacer(Modifier.height(12.dp))
+//
+//            Button(
+//                onClick = onOpenLearningMode,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(52.dp)
+//            ) {
+//                Text("Learning mode")
+//            }
+            val buttonModifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+
+            val buttonTextStyle = TextStyle(fontSize = 18.sp)
+
             Button(
                 onClick = onPlay,
-                modifier = Modifier.width(200.dp)
-            ) { Text("Play", fontSize = 18.sp) }
+                modifier = buttonModifier
+            ) {
+                Text("Play", style = buttonTextStyle)
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = onOpenLearningMode,
+                modifier = buttonModifier
+            ) {
+                Text("Learning mode", style = buttonTextStyle)
+            }
+
         }
     }
 }
@@ -94,6 +133,10 @@ private enum class MainTab { Profile, Leaderboard }
 
 @Composable
 private fun ProfileCard(username: String) {
+    val ctx = LocalContext.current
+    val streakDays by remember {
+        mutableStateOf(StreakManager.getCurrentStreak(ctx))
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,6 +151,20 @@ private fun ProfileCard(username: String) {
         Text(
             text = "Ready to code? Choose a difficulty and start!",
             style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(Modifier.height(16.dp))
+
+        // 🔥 afișăm streak-ul
+        val streakText =
+            if (streakDays > 0)
+                "Current streak: $streakDays day" + if (streakDays > 1) "s 🔥" else " 🔥"
+            else
+                "No streak yet — complete a quiz today!"
+
+        Text(
+            text = streakText,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
