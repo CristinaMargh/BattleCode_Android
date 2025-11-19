@@ -29,7 +29,8 @@ fun MainScreen(
     onToggleDark: (Boolean) -> Unit,
     onPlay: () -> Unit,
     onOpenFullLeaderboard: () -> Unit,
-    onOpenLearningMode: () -> Unit
+    onOpenLearningMode: () -> Unit,
+    onOpenAwards: () -> Unit
 ) {
     var tab by remember { mutableStateOf(MainTab.Profile) }
 
@@ -88,20 +89,7 @@ fun MainScreen(
 
             Spacer(Modifier.height(28.dp))
 
-//            Button(
-//                onClick = onPlay,
-//                modifier = Modifier.width(200.dp)
-//            ) { Text("Play", fontSize = 18.sp) }
-//            Spacer(Modifier.height(12.dp))
-//
-//            Button(
-//                onClick = onOpenLearningMode,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(52.dp)
-//            ) {
-//                Text("Learning mode")
-//            }
+
             val buttonModifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
@@ -122,6 +110,16 @@ fun MainScreen(
                 modifier = buttonModifier
             ) {
                 Text("Learning mode", style = buttonTextStyle)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // ← NOU: buton Awards
+            Button(
+                onClick = onOpenAwards,
+                modifier = buttonModifier
+            ) {
+                Text("Awards", fontSize = 18.sp)
             }
 
         }

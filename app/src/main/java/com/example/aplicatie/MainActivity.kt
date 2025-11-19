@@ -75,6 +75,14 @@ class MainActivity : ComponentActivity() {
                                 com.example.aplicatie.ui.learning.SelectLearningTopicActivity::class.java
                             )
                         )
+                    },
+                    onOpenAwards = {
+                        startActivity(
+                            Intent(
+                                this@MainActivity,
+                                com.example.aplicatie.ui.awards.AwardsActivity::class.java
+                            )
+                        )
                     }
 
 

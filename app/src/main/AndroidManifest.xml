@@ -39,6 +39,8 @@
         <activity android:name=".ui.SelectTopicActivity" />
         <activity android:name=".ui.learning.LearningModeActivity" />
         <activity android:name=".ui.learning.SelectLearningTopicActivity" />
+        <activity android:name=".ui.awards.AwardsActivity" />
+
 
 
 
