@@ -40,6 +40,10 @@
         <activity android:name=".ui.learning.LearningModeActivity" />
         <activity android:name=".ui.learning.SelectLearningTopicActivity" />
         <activity android:name=".ui.awards.AwardsActivity" />
+        <activity android:name=".ui.StatisticsActivity" />
+        <activity android:name=".ui.friends.FriendsActivity" />
+
+
 
 
 

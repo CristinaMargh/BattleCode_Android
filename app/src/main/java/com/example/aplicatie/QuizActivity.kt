@@ -473,6 +473,8 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var nextQuestionButton: Button
     private lateinit var currentUsername: String
     private var currentLang: String = "en"
+    private var correctCount = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -587,9 +589,17 @@ class QuizActivity : AppCompatActivity() {
     private fun showQuestion() {
         if (currentQuestionIndex >= questions.size) {
 
-            UserRepository().updateHighScore(currentUsername, score)
-            // actualizare Streak
-            com.example.aplicatie.util.StreakManager.onQuizFinished(this)
+            val repo = com.example.aplicatie.data.UserRepository()
+            repo.updateAfterQuiz(
+                username = currentUsername,
+                lastScore = score,
+                correctCount = correctCount,
+                totalQuestions = questions.size
+            )
+
+            // streak
+            com.example.aplicatie.util.StreakManager.onQuizFinished(this, currentUsername)
+
 
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("score", score)
@@ -626,6 +636,7 @@ class QuizActivity : AppCompatActivity() {
                 val timeTaken = SystemClock.elapsedRealtime() - startTime
 
                 if (index == question.correctAnswerIndex) {
+                    correctCount++
                     score += calculateScore(timeTaken)
                     UserRepository().updateHighScore(currentUsername, score)
                     button.setBackgroundResource(R.drawable.answer_correct)

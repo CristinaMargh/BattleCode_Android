@@ -6,126 +6,120 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.*
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-
-
 
 object StreakManager {
 
-    private const val PREFS = "streak_prefs"
-    private const val KEY_LAST_DAY = "last_day"          // YYYYMMDD
+    private const val PREFS_PREFIX = "streak_"        // vom avea streak_<username>
+    private const val KEY_LAST_DAY = "last_day"       // YYYYMMDD
     private const val KEY_STREAK = "streak"
-    private const val KEY_LAST_TS = "last_ts"            // millis
-    private const val REMINDER_WORK = "streak_reminder"
+    private const val KEY_LAST_TS = "last_ts"         // millis
 
-    /**
-     * Apeși asta când utilizatorul termină un quiz.
-     * Actualizează streak-ul + programează reminderul de 20h.
-     */
-    fun onQuizFinished(ctx: Context) {
-        val prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    const val REMINDER_WORK = "streak_reminder"
 
-        val now = System.currentTimeMillis()
-        val today = dayCode(now)
-        val lastDay = prefs.getInt(KEY_LAST_DAY, -1)
-        val oldStreak = prefs.getInt(KEY_STREAK, 0)
+    // ------------ helpers pentru preferințele unui user -----------------
 
-        val newStreak = when {
-            lastDay == today -> oldStreak              // deja a jucat azi
-            lastDay == today - 1 -> oldStreak + 1      // ieri + azi -> streak++
-            else -> 1                                   // pauză mai mare => reset
-        }
-
-        prefs.edit()
-            .putInt(KEY_LAST_DAY, today)
-            .putInt(KEY_STREAK, newStreak)
-            .putLong(KEY_LAST_TS, now)
-            .apply()
-
-        scheduleReminder(ctx, now)
+    private fun prefsForUser(ctx: Context, username: String?): android.content.SharedPreferences {
+        // dacă nu avem username, folosim un fallback generic
+        val name = if (username.isNullOrBlank()) "${PREFS_PREFIX}default" else PREFS_PREFIX + username
+        return ctx.getSharedPreferences(name, Context.MODE_PRIVATE)
     }
 
-    fun getCurrentStreak(ctx: Context): Int =
-        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .getInt(KEY_STREAK, 0)
-
-    /** Stochează în prefs o limbă mai explicită – doar dacă vrei s-o afișezi */
-    private fun dayCode(millis: Long): Int {
-        // transformăm în "YYYYMMDD" simplu
-        val cal = java.util.Calendar.getInstance().apply { timeInMillis = millis }
-        val y = cal.get(java.util.Calendar.YEAR)
-        val m = cal.get(java.util.Calendar.MONTH) + 1
-        val d = cal.get(java.util.Calendar.DAY_OF_MONTH)
+    // yyyyMMdd (ex: 20250319)
+    private fun todayInt(): Int {
+        val now = java.util.Calendar.getInstance()
+        val y = now.get(java.util.Calendar.YEAR)
+        val m = now.get(java.util.Calendar.MONTH) + 1
+        val d = now.get(java.util.Calendar.DAY_OF_MONTH)
         return y * 10_000 + m * 100 + d
     }
 
-    /**
-     * Programează un worker care rulează după 20 de ore
-     * (24h - 4h => notificarea „pierzi streak-ul în 4 ore”).
-     *
-     * În timpul dezvoltării poți schimba 20 de ore cu 1 minut.
-     */
-    fun scheduleReminder(ctx: Context, fromTs: Long) {
-        // anulăm reminder-ul vechi, dacă exista
-        WorkManager.getInstance(ctx).cancelUniqueWork(REMINDER_WORK)
+    // ------------ apelat când userul termină un quiz --------------------
 
-        val delayMillis = TimeUnit.HOURS.toMillis(20)   // PROD
-         //val delayMillis = TimeUnit.MINUTES.toMillis(1)   // TEST
+    fun onQuizFinished(context: Context, username: String?) {
+        val prefs = prefsForUser(context, username)
 
-        val request = OneTimeWorkRequestBuilder<StreakReminderWorker>()
-            .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
-            .build()
+        val today = todayInt()
+        val lastDay = prefs.getInt(KEY_LAST_DAY, 0)
+        var streak = prefs.getInt(KEY_STREAK, 0)
 
-        WorkManager.getInstance(ctx)
-            .enqueueUniqueWork(REMINDER_WORK, ExistingWorkPolicy.REPLACE, request)
+        if (lastDay == today) {
+            // deja a făcut un quiz azi, nu modificăm streak-ul, dar updatăm timestamp-ul
+        } else if (lastDay == today - 1) {
+            // zi consecutivă -> creștem streak
+            streak += 1
+        } else {
+            // pauză mai mare de o zi -> reset
+            streak = 1
+        }
+
+        val now = System.currentTimeMillis()
+
+        prefs.edit()
+            .putInt(KEY_LAST_DAY, today)
+            .putInt(KEY_STREAK, streak)
+            .putLong(KEY_LAST_TS, now)
+            .apply()
+
+        // re-programează reminderul la ~20h după ultimul quiz
+        scheduleReminder(context)
     }
 
-    /**
-     * Verifică dacă încă NU a mai fost jucat un quiz de când am programat reminderul.
-     * Dacă nu, trimite notificarea de „mai ai 4 ore”.
-     */
-    internal fun maybeShowReminder(ctx: Context) {
-        val prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val lastTs = prefs.getLong(KEY_LAST_TS, -1L)
-        if (lastTs <= 0L) return
+    // streak curent pentru profil
+    fun getCurrentStreak(context: Context): Int {
+        val appPrefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val username = appPrefs.getString("username", null)
+        val prefs = prefsForUser(context, username)
+        return prefs.getInt(KEY_STREAK, 0)
+    }
+
+    // ------------ WorkManager: programare reminder ----------------------
+
+    private fun scheduleReminder(context: Context) {
+        val work = OneTimeWorkRequestBuilder<StreakReminderWorker>()
+            .setInitialDelay(20, TimeUnit.HOURS)   // rulează după ~20h
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            REMINDER_WORK,
+            ExistingWorkPolicy.REPLACE,
+            work
+        )
+    }
+
+    // apelată DIN worker → decide dacă trimite notificarea
+    fun maybeShowReminder(ctx: Context) {
+        val appPrefs = ctx.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val username = appPrefs.getString("username", null)
+        val prefs = prefsForUser(ctx, username)
+
+        val lastTs = prefs.getLong(KEY_LAST_TS, 0L)
+        if (lastTs == 0L) return
 
         val now = System.currentTimeMillis()
         val diff = now - lastTs
 
-        // suntem între 20h și 24h de la ultimul quiz => trimitem notificare
-        val twentyH = TimeUnit.HOURS.toMillis(20)
-        val twentyFourH = TimeUnit.HOURS.toMillis(24)
+        val twentyHours = TimeUnit.HOURS.toMillis(20)
+        val oneDay = TimeUnit.HOURS.toMillis(24)
 
-        if (diff in twentyH..twentyFourH) {
+        // trimitem notificare doar dacă suntem între 20 și 24h de la ultimul quiz
+        if (diff in twentyHours..oneDay) {
             showNotification(ctx)
         }
-        // dacă userul tot nu joacă, streak-ul va fi resetat data viitoare când chemi onQuizFinished
     }
 
-    private fun showNotification(ctx: Context) {
-        // Android 13+ – check POST_NOTIFICATIONS
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(
-                    ctx,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // nu avem permisiunea -> ieșim fără să dăm notify
-                return
-            }
-        }
+    // ------------ notificarea propriu-zisă ------------------------------
 
+    private fun showNotification(ctx: Context) {
         val channelId = "streak_channel"
 
-        // channel (doar o dată)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val ch = NotificationChannel(
                 channelId,
-                "Streak reminders",
+                "BattleCode streak",
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -141,5 +135,4 @@ object StreakManager {
 
         NotificationManagerCompat.from(ctx).notify(1001, notif)
     }
-
 }

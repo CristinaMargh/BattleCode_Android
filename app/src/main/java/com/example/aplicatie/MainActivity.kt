@@ -83,6 +83,22 @@ class MainActivity : ComponentActivity() {
                                 com.example.aplicatie.ui.awards.AwardsActivity::class.java
                             )
                         )
+                    },
+                    onOpenStatistics = {
+                        startActivity(
+                            Intent(
+                                this@MainActivity,
+                                com.example.aplicatie.ui.StatisticsActivity::class.java
+                            ).putExtra("username", currentUsername)
+                        )
+                    } ,
+                    onOpenFriends = {                                // NEW
+                        startActivity(
+                            Intent(
+                                this@MainActivity,
+                                com.example.aplicatie.ui.friends.FriendsActivity::class.java
+                            )
+                        )
                     }
 
 

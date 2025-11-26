@@ -30,7 +30,9 @@ fun MainScreen(
     onPlay: () -> Unit,
     onOpenFullLeaderboard: () -> Unit,
     onOpenLearningMode: () -> Unit,
-    onOpenAwards: () -> Unit
+    onOpenAwards: () -> Unit,
+    onOpenStatistics: () -> Unit,
+    onOpenFriends: () -> Unit
 ) {
     var tab by remember { mutableStateOf(MainTab.Profile) }
 
@@ -121,6 +123,20 @@ fun MainScreen(
             ) {
                 Text("Awards", fontSize = 18.sp)
             }
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = onOpenStatistics,
+                modifier = buttonModifier
+            ) {
+                Text("Statistics", style = buttonTextStyle)
+            }
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = onOpenFriends,
+                modifier = buttonModifier
+            ) { Text("Friends", style = buttonTextStyle) }
 
         }
     }

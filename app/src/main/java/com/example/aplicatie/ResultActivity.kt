@@ -36,9 +36,9 @@ class ResultActivity : ComponentActivity() {
         val wrongA = intent.getStringArrayListExtra("wrongCorrectAnswers") ?: arrayListOf()
 
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        val username = prefs.getString("username", null)
+        val username = prefs.getString("username", "ANONIM") ?: "ANONIM"
         //am facut un quiz azi
-        StreakManager.onQuizFinished(this)
+        StreakManager.onQuizFinished(this, username = username)
 
         setContent {
             AplicatieTheme {
