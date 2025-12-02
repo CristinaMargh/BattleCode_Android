@@ -1,6 +1,7 @@
 package com.example.aplicatie
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,9 +14,13 @@ import com.example.aplicatie.ui.MainScreen
 import com.example.aplicatie.ui.SelectTopicActivity
 import com.example.aplicatie.ui.theme.AplicatieTheme
 import com.example.aplicatie.util.LocationLanguage
+import com.example.aplicatie.util.QuizFinishedReceiver
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private val quizFinishedReceiver = QuizFinishedReceiver()
+    private val quizFinishedFilter =
+        IntentFilter(QuizFinishedReceiver.ACTION_QUIZ_FINISHED)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,5 +110,16 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        // înregistrăm receiver-ul doar când activity e pe ecran
+        registerReceiver(quizFinishedReceiver, quizFinishedFilter)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // îl scoatem când activity nu mai e vizibilă
+        unregisterReceiver(quizFinishedReceiver)
     }
 }

@@ -24,6 +24,15 @@ object LocationLanguage {
         if (override.isNotEmpty()) return override
         return p.getString(PREF_LANG, "en") ?: "en"
     }
+    fun mapCountryToLang(countryCode: String?): String =
+        when (countryCode?.uppercase()) {
+            "RO" -> "ro"
+            "MD" -> "ro"
+            "DE" -> "de"
+            "AT" -> "de"
+            "CH" -> "de"
+            else -> "en"
+        }
 
     /** Apelează o singură dată la pornire (ex: în Welcome/Main). */
     suspend fun detectAndSaveLanguage(activity: Activity) {

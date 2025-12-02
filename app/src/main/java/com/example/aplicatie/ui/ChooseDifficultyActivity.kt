@@ -25,11 +25,11 @@ class ChooseDifficultyActivity : ComponentActivity() {
 
         setContent {
             AplicatieTheme {
-                // 🔹 acest Box forțează fundalul mov deschis
+                // acest Box forțează fundalul mov deschis
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0xFFD1C5E4)) // 💜 mov deschis aplicat direct
+                        .background(Color(0xFFD1C5E4))
                 ) {
                     ChooseDifficultyScreen(
                         onSelectDifficulty = { difficulty ->

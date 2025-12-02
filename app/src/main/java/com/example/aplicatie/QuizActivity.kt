@@ -587,19 +587,40 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun showQuestion() {
+//        if (currentQuestionIndex >= questions.size) {
+//
+//            val repo = com.example.aplicatie.data.UserRepository()
+//            repo.updateAfterQuiz(
+//                username = currentUsername,
+//                lastScore = score,
+//                correctCount = correctCount,
+//                totalQuestions = questions.size
+//            )
+//
+//            // streak
+//            com.example.aplicatie.util.StreakManager.onQuizFinished(this, currentUsername)
+//
+//
+//            val intent = Intent(this, ResultActivity::class.java)
+//            intent.putExtra("score", score)
+//            intent.putStringArrayListExtra("wrongQuestions", ArrayList(wrongQuestions))
+//            intent.putStringArrayListExtra("wrongCorrectAnswers", ArrayList(wrongCorrectAnswers))
+//            startActivity(intent)
+//            finish()
+//            return
+//        }
         if (currentQuestionIndex >= questions.size) {
 
-            val repo = com.example.aplicatie.data.UserRepository()
-            repo.updateAfterQuiz(
-                username = currentUsername,
-                lastScore = score,
-                correctCount = correctCount,
-                totalQuestions = questions.size
-            )
-
-            // streak
+            UserRepository().updateHighScore(currentUsername, score)
+            // actualizare Streak
             com.example.aplicatie.util.StreakManager.onQuizFinished(this, currentUsername)
 
+            // 🔔 trimitem un broadcast custom când s-a terminat quiz-ul
+            val bcast = Intent(com.example.aplicatie.util.QuizFinishedReceiver.ACTION_QUIZ_FINISHED).apply {
+                putExtra("username", currentUsername)
+                putExtra("score", score)
+            }
+            sendBroadcast(bcast)
 
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("score", score)
@@ -609,6 +630,7 @@ class QuizActivity : AppCompatActivity() {
             finish()
             return
         }
+
 
         happyCat.visibility = View.GONE
         angryCat.visibility = View.GONE

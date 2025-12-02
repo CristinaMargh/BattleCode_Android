@@ -42,11 +42,7 @@
         <activity android:name=".ui.awards.AwardsActivity" />
         <activity android:name=".ui.StatisticsActivity" />
         <activity android:name=".ui.friends.FriendsActivity" />
-
-
-
-
-
+        <receiver android:name=".util.QuizFinishedReceiver" />
 
 
         <!-- Launcher -->

@@ -116,7 +116,7 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // ← NOU: buton Awards
+            //  buton Awards
             Button(
                 onClick = onOpenAwards,
                 modifier = buttonModifier
@@ -168,7 +168,7 @@ private fun ProfileCard(username: String) {
         )
         Spacer(Modifier.height(16.dp))
 
-        // 🔥 afișăm streak-ul
+        //  streak-ul
         val streakText =
             if (streakDays > 0)
                 "Current streak: $streakDays day" + if (streakDays > 1) "s 🔥" else " 🔥"
