@@ -587,19 +587,19 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun showQuestion() {
+
 //        if (currentQuestionIndex >= questions.size) {
 //
-//            val repo = com.example.aplicatie.data.UserRepository()
-//            repo.updateAfterQuiz(
-//                username = currentUsername,
-//                lastScore = score,
-//                correctCount = correctCount,
-//                totalQuestions = questions.size
-//            )
-//
-//            // streak
+//            UserRepository().updateHighScore(currentUsername, score)
+//            // actualizare Streak
 //            com.example.aplicatie.util.StreakManager.onQuizFinished(this, currentUsername)
 //
+//            // 🔔 trimitem un broadcast custom când s-a terminat quiz-ul
+//            val bcast = Intent(com.example.aplicatie.util.QuizFinishedReceiver.ACTION_QUIZ_FINISHED).apply {
+//                putExtra("username", currentUsername)
+//                putExtra("score", score)
+//            }
+//            sendBroadcast(bcast)
 //
 //            val intent = Intent(this, ResultActivity::class.java)
 //            intent.putExtra("score", score)
@@ -610,17 +610,26 @@ class QuizActivity : AppCompatActivity() {
 //            return
 //        }
         if (currentQuestionIndex >= questions.size) {
-
             UserRepository().updateHighScore(currentUsername, score)
-            // actualizare Streak
             com.example.aplicatie.util.StreakManager.onQuizFinished(this, currentUsername)
 
-            // 🔔 trimitem un broadcast custom când s-a terminat quiz-ul
-            val bcast = Intent(com.example.aplicatie.util.QuizFinishedReceiver.ACTION_QUIZ_FINISHED).apply {
-                putExtra("username", currentUsername)
-                putExtra("score", score)
-            }
-            sendBroadcast(bcast)
+            // actualizează statistici si SERIALIZEAZĂ
+            val stats = com.example.aplicatie.util.StatsStorage.load(this, currentUsername)
+
+            val newTotalQuizzes = stats.totalQuizzes + 1
+            val newTotalAnswers = stats.totalAnswers + questions.size
+            val newCorrect = stats.correctAnswers + correctCount
+            val newBest = maxOf(stats.bestScore, score)
+
+            val updated = stats.copy(
+                totalQuizzes = newTotalQuizzes,
+                lastScore = score,
+                bestScore = newBest,
+                totalAnswers = newTotalAnswers,
+                correctAnswers = newCorrect
+            )
+
+            com.example.aplicatie.util.StatsStorage.save(this, currentUsername, updated)
 
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("score", score)
@@ -630,6 +639,7 @@ class QuizActivity : AppCompatActivity() {
             finish()
             return
         }
+
 
 
         happyCat.visibility = View.GONE

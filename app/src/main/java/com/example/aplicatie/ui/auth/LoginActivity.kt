@@ -1,6 +1,8 @@
 package com.example.aplicatie.ui.auth
+import com.example.aplicatie.util.PushTokenManager
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -21,9 +23,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import com.example.aplicatie.MainActivity
 import com.example.aplicatie.data.UserRepository
 import com.example.aplicatie.ui.theme.AplicatieTheme
+import androidx.core.content.ContextCompat
+import android.Manifest
 
 class LoginActivity : ComponentActivity() {
 
@@ -31,6 +36,18 @@ class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //cererea de permisiune notificare
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1001
+                )
+            }
+        }
 
         setContent {
             AplicatieTheme {
@@ -43,6 +60,7 @@ class LoginActivity : ComponentActivity() {
                             // save + go to Main
                             val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
                             prefs.edit().putString("username", username).apply()
+                            PushTokenManager.refreshAndStoreToken(this, username)
                             startActivity(Intent(this, MainActivity::class.java)
                                 .putExtra("username", username))
                             finish()

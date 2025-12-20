@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.firebase.firestore.ktx)
+    implementation("com.google.firebase:firebase-messaging-ktx")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,7 +62,6 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
-    implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material-icons-core")
     // COmpose Navigation, for many activities
@@ -74,6 +74,6 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-extended")
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     testImplementation(kotlin("test"))
+    implementation("com.google.code.gson:gson:2.10.1")
 
 }
-apply(plugin = "com.google.gms.google-services")

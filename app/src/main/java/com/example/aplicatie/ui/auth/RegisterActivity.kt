@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.example.aplicatie.util.PushTokenManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -45,6 +46,7 @@ class RegisterActivity : ComponentActivity() {
                         onSuccess = { username ->
                             val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
                             prefs.edit().putString("username", username).apply()
+                            PushTokenManager.refreshAndStoreToken(this, username)
                             startActivity(
                                 Intent(this, MainActivity::class.java)
                                     .putExtra("username", username)

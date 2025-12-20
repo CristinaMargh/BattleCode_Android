@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
 
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -20,6 +22,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Aplicatie"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="fcm_default_channel" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+
+        <service
+            android:name=".util.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- Main screen after auth; keep one declaration only. -->
         <activity
