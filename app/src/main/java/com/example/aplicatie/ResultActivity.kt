@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
+import com.example.aplicatie.util.ReviewQuestion
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -34,6 +35,10 @@ class ResultActivity : ComponentActivity() {
         val score = intent.getIntExtra("score", 0)
         val wrongQ = intent.getStringArrayListExtra("wrongQuestions") ?: arrayListOf()
         val wrongA = intent.getStringArrayListExtra("wrongCorrectAnswers") ?: arrayListOf()
+        val reviewQs =
+            (intent.getSerializableExtra("reviewQuestions") as? ArrayList<ReviewQuestion>)
+                ?: arrayListOf()
+
 
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val username = prefs.getString("username", "ANONIM") ?: "ANONIM"
@@ -72,7 +77,16 @@ class ResultActivity : ComponentActivity() {
                             i.flags =
                                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(i)
+                        },
+                                reviewQuestions = reviewQs,
+                        onReview = {
+                            startActivity(
+                                Intent(this, ReviewQuizActivity::class.java)
+                                    .putExtra("username", username)
+                                    .putExtra("reviewQuestions", reviewQs)
+                            )
                         }
+
                     )
                 }
             }
@@ -90,8 +104,11 @@ private fun ResultScreen(
     onPlayAgain: () -> Unit,
     onLeaderboard: () -> Unit,
     onWrong: () -> Unit,
-    onLogout: () -> Unit
-) {
+    onLogout: () -> Unit,
+    reviewQuestions: List<ReviewQuestion>,
+    onReview: () -> Unit,
+
+    ) {
     // light purple background
     val lightPurple = Color(0xFF98A5D6)
 
@@ -153,8 +170,16 @@ private fun ResultScreen(
                 onClick = onWrong,
                 modifier = Modifier.fillMaxWidth()
             ) { Text("Wrong Questions") }
+            if (reviewQuestions.isNotEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                Button(
+                    onClick = onReview,
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("Review Mode") }
+            }
 
             Spacer(Modifier.height(12.dp))
+
 
             Button(
                 onClick = onLeaderboard,

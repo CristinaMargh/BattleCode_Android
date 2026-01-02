@@ -58,7 +58,8 @@
         <activity android:name=".ui.awards.AwardsActivity" />
         <activity android:name=".ui.StatisticsActivity" />
         <activity android:name=".ui.friends.FriendsActivity" />
-        <receiver android:name=".util.QuizFinishedReceiver" />
+        <activity android:name=".ReviewQuizActivity" />
+
 
 
         <!-- Launcher -->
@@ -70,6 +71,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name=".util.QuizFinishedReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.aplicatie.ACTION_QUIZ_FINISHED" />
+            </intent-filter>
+        </receiver>
+
 
     </application>
 </manifest>

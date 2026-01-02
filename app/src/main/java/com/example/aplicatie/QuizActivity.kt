@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.*
 import android.view.View
+import com.example.aplicatie.util.ReviewQuestion
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
@@ -12,6 +13,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.aplicatie.data.UserRepository
 import com.example.aplicatie.util.LocationLanguage
+import com.example.aplicatie.util.QuizFinishedReceiver
 
 class QuizActivity : AppCompatActivity() {
 
@@ -456,6 +458,9 @@ class QuizActivity : AppCompatActivity() {
     )
 
     // runtime
+    private val reviewQuestions = arrayListOf<ReviewQuestion>()
+    private val reviewAdded = hashSetOf<String>() // ca să nu duplici aceeași întrebare
+
     private lateinit var questions: List<Q>
     private val wrongQuestions = mutableListOf<String>()
     private val wrongCorrectAnswers = mutableListOf<String>()
@@ -588,27 +593,6 @@ class QuizActivity : AppCompatActivity() {
 
     private fun showQuestion() {
 
-//        if (currentQuestionIndex >= questions.size) {
-//
-//            UserRepository().updateHighScore(currentUsername, score)
-//            // actualizare Streak
-//            com.example.aplicatie.util.StreakManager.onQuizFinished(this, currentUsername)
-//
-//            // 🔔 trimitem un broadcast custom când s-a terminat quiz-ul
-//            val bcast = Intent(com.example.aplicatie.util.QuizFinishedReceiver.ACTION_QUIZ_FINISHED).apply {
-//                putExtra("username", currentUsername)
-//                putExtra("score", score)
-//            }
-//            sendBroadcast(bcast)
-//
-//            val intent = Intent(this, ResultActivity::class.java)
-//            intent.putExtra("score", score)
-//            intent.putStringArrayListExtra("wrongQuestions", ArrayList(wrongQuestions))
-//            intent.putStringArrayListExtra("wrongCorrectAnswers", ArrayList(wrongCorrectAnswers))
-//            startActivity(intent)
-//            finish()
-//            return
-//        }
         if (currentQuestionIndex >= questions.size) {
             UserRepository().updateHighScore(currentUsername, score)
             com.example.aplicatie.util.StreakManager.onQuizFinished(this, currentUsername)
@@ -630,11 +614,20 @@ class QuizActivity : AppCompatActivity() {
             )
 
             com.example.aplicatie.util.StatsStorage.save(this, currentUsername, updated)
+            //demo broadcast receiver
+            val bcast = Intent(this, QuizFinishedReceiver::class.java).apply {
+                action = QuizFinishedReceiver.ACTION_QUIZ_FINISHED
+                putExtra("username", currentUsername)
+                putExtra("score", score)
+            }
+            sendBroadcast(bcast)
+
 
             val intent = Intent(this, ResultActivity::class.java)
             intent.putExtra("score", score)
             intent.putStringArrayListExtra("wrongQuestions", ArrayList(wrongQuestions))
             intent.putStringArrayListExtra("wrongCorrectAnswers", ArrayList(wrongCorrectAnswers))
+            intent.putExtra("reviewQuestions", reviewQuestions)
             startActivity(intent)
             finish()
             return
@@ -681,6 +674,17 @@ class QuizActivity : AppCompatActivity() {
                     vibrateError()
                     wrongQuestions.add(question.text)
                     wrongCorrectAnswers.add(question.options[question.correctAnswerIndex])
+                    // păstrăm întrebarea completă pentru Review Mode (o singură dată)
+                    if (reviewAdded.add(question.text)) {
+                        reviewQuestions.add(
+                            ReviewQuestion(
+                                text = question.text,
+                                options = ArrayList(question.options),
+                                correctAnswerIndex = question.correctAnswerIndex
+                            )
+                        )
+                    }
+
                 }
 
                 // dezactivezi restul
