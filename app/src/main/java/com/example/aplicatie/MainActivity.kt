@@ -104,7 +104,14 @@ class MainActivity : ComponentActivity() {
                                 com.example.aplicatie.ui.friends.FriendsActivity::class.java
                             )
                         )
+                    },
+                    onMultiplayer = {
+                        startActivity(
+                            Intent(this@MainActivity, com.example.aplicatie.ui.multi.MultiplayerMenuActivity::class.java)
+                                .putExtra("username", currentUsername)
+                        )
                     }
+
 
 
                 )

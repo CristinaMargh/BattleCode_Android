@@ -1,16 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:gravity="center_horizontal"
-    android:padding="24dp" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
 
-    <Button android:id="@+id/btnHost" android:text="Host game (Server)"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/btn_local_multiplayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Local Multiplayer (2 players)" />
 
-    <Spinner android:id="@+id/spinnerDevices"
-             android:layout_width="match_parent" android:layout_height="wrap_content"
-             android:layout_marginTop="16dp"/>
-
-    <Button android:id="@+id/btnJoin" android:text="Join selected device"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+    <Button
+        android:id="@+id/btn_back_to_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Back" />
 </LinearLayout>

@@ -59,6 +59,10 @@
         <activity android:name=".ui.StatisticsActivity" />
         <activity android:name=".ui.friends.FriendsActivity" />
         <activity android:name=".ReviewQuizActivity" />
+        <activity android:name=".ui.multi.MultiplayerMenuActivity" />
+        <activity android:name=".ui.multi.LocalMultiplayerQuizActivity" />
+        <activity android:name=".ui.multi.MultiplayerResultActivity" />
+
 
 
 

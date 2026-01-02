@@ -32,8 +32,10 @@ fun MainScreen(
     onOpenLearningMode: () -> Unit,
     onOpenAwards: () -> Unit,
     onOpenStatistics: () -> Unit,
-    onOpenFriends: () -> Unit
-) {
+    onOpenFriends: () -> Unit,
+    onMultiplayer: () -> Unit,
+
+    ) {
     var tab by remember { mutableStateOf(MainTab.Profile) }
 
     val lilac = Color(0xFF98A5D6)
@@ -105,6 +107,11 @@ fun MainScreen(
                 Text("Play", style = buttonTextStyle)
             }
 
+            Spacer(Modifier.height(12.dp))
+            Button(
+                onClick = onMultiplayer,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Multiplayer") }
             Spacer(Modifier.height(12.dp))
 
             Button(
